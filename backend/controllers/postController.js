@@ -5,7 +5,7 @@ const axios = require("axios");
 const querystring = require("querystring");
 const OAuth = require("oauth-1.0a");
 const crypto = require("crypto");
-const { TwitterApi } = require('twitter-api-v2');
+const {TwitterApi} = require('twitter-api-v2');
 
 require('dotenv').config();
 
@@ -13,27 +13,83 @@ require('dotenv').config();
 // @desc   - Upload the post to Facebook
 // @route  - POST /upload/facebook
 // @access - Private
-const postToFacebook = async(req, res) =>{
+const postToFacebook = async (req, res) => {
     try{
+        const {caption, mediaURL, mediaType} = req.body;
+        const userId = req.id;
+        const tokenData = await AccessToken.findOne({ userId, platform: "facebook" });
 
+        if(!tokenData || Date.now() >= new Date(tokenData.expiresAt).getTime()) {
+            return res.status(401).json({ message: "Your Facebook profile is not connected" });
+        }
+
+        let mediaPayload = {};
+        
+        if(mediaURL){
+            const mediaResponse = await axios.post(`https://graph.facebook.com/v19.0/${tokenData.profileId}/photos`, {
+                    url: mediaURL,
+                    published: false,
+                    access_token: tokenData.token
+                }
+            );
+            mediaPayload = {
+                attached_media: [{ media_fbid: mediaResponse.data.id }]
+            };
+        }
+
+        const postResponse = await axios.post(`https://graph.facebook.com/v19.0/${tokenData.profileId}/feed`, {
+                message: caption,
+                ...mediaPayload,
+                access_token: tokenData.token
+            }
+        );
+
+        res.status(200).json({message: "Facebook post created successfully", postId: postResponse.data.id});
     }
     catch(error){
-        res.status(500).json({message : 'Internal Server Error'});
+        console.error("Facebook posting error:", error.response?.data || error);
+        res.status(500).json({message: "Internal Server Error"});
     }
-}
+};
 
 
 // @desc   - Upload the post to Instagram
 // @route  - POST /upload/instagram
 // @access - Private
-const postToInstagram = async(req, res) =>{
+const postToInstagram = async (req, res) => {
     try{
+        const {caption, mediaURL, mediaType} = req.body;
+        const userId = req.id;
+        const tokenData = await AccessToken.findOne({ userId, platform: "instagram" });
+
+        if(!tokenData || !tokenData.profileId || Date.now() >= new Date(tokenData.expiresAt).getTime()){
+            return res.status(401).json({ message: "Your Instagram profile is not connected" });
+        }
+
+        const mediaResponse = await axios.post(`https://graph.facebook.com/v19.0/${tokenData.profileId}/media`, {
+                image_url: mediaURL,
+                caption: caption,
+                access_token: tokenData.token
+            }
+        );
+
+        const publishResponse = await axios.post(`https://graph.facebook.com/v19.0/${tokenData.profileId}/media_publish`, {
+                creation_id: mediaResponse.data.id,
+                access_token: tokenData.token
+            }
+        );
+
+        res.status(200).json({
+            message: "Instagram post published successfully",
+            mediaId: publishResponse.data.id
+        });
 
     }
     catch(error){
-        res.status(500).json({message : 'Internal Server Error'});
+        console.error("Instagram posting error:", error.response?.data || error);
+        res.status(500).json({message: "Internal Server Error"});
     }
-}
+};
 
 
 // @desc   - Upload the post to LinkedIn (Can upload only image or text)
