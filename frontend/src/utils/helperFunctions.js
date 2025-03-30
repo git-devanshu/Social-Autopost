@@ -38,6 +38,42 @@ export function getCurrentDate(type){
     }
 }
 
+// function to return the decoded payload of jwt
+export function decodeToken(token) {
+    try {
+        const base64Url = token.split('.')[1]; // Get the payload part
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/'); // Base64URL to Base64
+        const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+        }).join(''));
+        return JSON.parse(jsonPayload); // Parse JSON payload
+    } 
+    catch (error) {
+        console.error('Invalid token:', error);
+        return null;
+    }
+}
+
+// generates a random code verifier for twitter OAuth
+export function generateCodeVerifier(){
+    const randomString = [...crypto.getRandomValues(new Uint8Array(32))]
+        .map((x) => x.toString(16).padStart(2, "0"))
+        .join("");
+    return btoa(randomString).replace(/=/g, "").replace(/\+/g, "-").replace(/\//g, "_");
+};
+
+// encodes the code verifier into base 64
+export async function generateCodeChallenge(codeVerifier){
+    const encoder = new TextEncoder();
+    const data = encoder.encode(codeVerifier);
+    const hash = await crypto.subtle.digest("SHA-256", data);
+    const base64 = btoa(String.fromCharCode(...new Uint8Array(hash)))
+        .replace(/=/g, "")
+        .replace(/\+/g, "-")
+        .replace(/\//g, "_");
+    return base64;
+};
+
 export function getBaseURL(){
     return 'http://localhost:5000';
 }

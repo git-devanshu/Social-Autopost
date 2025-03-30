@@ -6,7 +6,7 @@ const checkAuthorization = (req, res, next)=>{
     const token = req.headers.authorization;
     if(token){
         try{
-            const decoded = jwt.verify(token.replace('Bearer ', ''), process.env.SECRET);
+            const decoded = jwt.verify(token.replace('Bearer ', ''), process.env.JWT_SECRET);
             if(!decoded.id || !decoded.email){
                 return res.status(401).json({ message : 'Authorization Error' });
             }

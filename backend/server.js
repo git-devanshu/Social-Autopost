@@ -3,6 +3,7 @@ const cors = require('cors');
 const {connectToDB} = require('./configs/dbConfig');
 const {authRouter} = require('./routes/authRoutes');
 const {postRouter} = require('./routes/postRoutes');
+const {oAuthRouter} = require('./routes/oAuthRoutes');
 
 require('dotenv').config();
 
@@ -19,6 +20,7 @@ connectToDB();
 // routes
 app.use('/auth', authRouter);
 app.use('/upload', postRouter);
+app.use('/oauth', oAuthRouter);
 
 // run the server
 app.listen(process.env.PORT, () =>{
