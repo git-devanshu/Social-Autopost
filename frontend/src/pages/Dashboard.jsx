@@ -17,50 +17,7 @@ export default function Dashboard() {
     const [isDisabled, setIsDisabled] = useState(false);
     const [mediaType, setMediaType] = useState('image');
 
-    const getQueryParams = (query) =>{
-        return query.substring(1).split('&')
-            .reduce((params, param) =>{
-                const [key, value] = param.split('=');
-                params[key] = value;
-                return params;
-            }, {});
-    };
-
-    //this is for showing alerts when redirected by oauth
-    useEffect(() => {
-        const queryParams = getQueryParams(location.search);
-        if(queryParams.success === 'true'){
-            toast.success('Profile Connected Successfully');
-            navigate('/dashboard');
-        } 
-        else if(queryParams.error === 'oauth_failed'){
-            toast.error('Profile Authentication Failed')
-            navigate('/dashboard');
-        }
-        else if(queryParams.oauth_token && queryParams.oauth_verifier){
-            const toastId = toast.loading("Connecting to Twitter...");
-            const token = localStorage.getItem("token");
-
-            axios.post(getBaseURL() + "/oauth/twitter/get-token", {
-                oauth_token: queryParams.oauth_token,
-                oauth_verifier: queryParams.oauth_verifier,
-            }, {headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            })
-            .then((res) => {
-                if (res.status === 200) {
-                    toast.success(res.data.message, { id: toastId });
-                }
-                navigate("/dashboard");
-            })
-            .catch((err) => {
-                console.log(err);
-                toast.error(err.response.data.message, { id: toastId });
-                navigate("/dashboard");
-            });
-        }
-    }, [location, navigate]);
+    
     
 
     const uploadPost = (platform) =>{

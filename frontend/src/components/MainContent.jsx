@@ -8,134 +8,202 @@ import TextEditor from "./TextEditor";
 import MediaPreview from "./MediaPreviews";
 import MediaUploadModal from "./MediaUploadModal";
 import SocialMediaPreview from "./SocialMediaPreview";
+import { useNavigate, useLocation } from "react-router-dom";
+import {toast} from 'react-hot-toast';
 
 export default function MainContent() {
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  const [text, setText] = useState("");
-  const [verifiedText, setVerifiedText] = useState("");
-  const [isVerified, setIsVerified] = useState(false);
-  const [mediaFiles, setMediaFiles] = useState([]);
-  const maxChars = 63206;
-  const { colorMode } = useColorMode();
-  const [isEmojiPickerOpen, setIsEmojiPickerOpen] = useState(false);
-  const toast = useToast();
-  const [isUploading, setIsUploading] = useState(false);
-  const [uploadError, setUploadError] = useState(null);
+    // non functional states
+    const [isUploading, setIsUploading] = useState(false);
+    const [uploadError, setUploadError] = useState(null);
+    const profileFileInputRef = useRef(null);
 
-  const [profileImage, setProfileImage] = useState("https://via.placeholder.com/150");
-  const [username, setUsername] = useState("User Profile");
-  const [notificationsCount, setNotificationsCount] = useState(3);
-  
-  const profileModal = useDisclosure();
-  const settingsModal = useDisclosure();
-  const infoModal = useDisclosure();
-  const profileFileInputRef = useRef(null);
+    const [verifiedText, setVerifiedText] = useState("");
+    const [isVerified, setIsVerified] = useState(false);
+    const [mediaFiles, setMediaFiles] = useState([]);
 
-  useEffect(() => {
-    return () => {
-      mediaFiles.forEach(file => {
-        if (file.url) URL.revokeObjectURL(file.url);
-      });
+// --------------------------------------------------
+
+    const navigate = useNavigate();
+    const location = useLocation();
+    const {colorMode} = useColorMode();
+    const maxChars = 63206;
+
+    const profileModal = useDisclosure();
+    const settingsModal = useDisclosure();
+    const infoModal = useDisclosure();
+    const {isOpen, onOpen, onClose} = useDisclosure();
+
+    const [caption, setCaption] = useState(''); //original text typed in the text box
+    const [mediaURL, setMediaURL] = useState(null); //final media url to be sent to backend
+    const [mediaType, setMediaType] = useState('image'); //final media type to be sent to backend
+    const [isEmojiPickerOpen, setIsEmojiPickerOpen] = useState(false);
+
+    const [username, setUsername] = useState("User Profile");
+    const [notificationsCount, setNotificationsCount] = useState(3);
+
+    // get the query params
+    const getQueryParams = (query) =>{
+        return query.substring(1).split('&')
+            .reduce((params, param) =>{
+                const [key, value] = param.split('=');
+                params[key] = value;
+                return params;
+            }, {});
     };
-  }, [mediaFiles]);
 
-  const handleTextChange = (e) => {
-    if (e.target.value.length <= maxChars) setText(e.target.value);
-  };
+    //this is for showing alerts when redirected by oauth
+    useEffect(() => {
+        const queryParams = getQueryParams(location.search);
+        if(queryParams.success === 'true'){
+            toast.success('Profile Connected Successfully');
+            navigate('/dashboard');
+        } 
+        else if(queryParams.error === 'oauth_failed'){
+            toast.error('Profile Authentication Failed')
+            navigate('/dashboard');
+        }
+        else if(queryParams.oauth_token && queryParams.oauth_verifier){
+            const toastId = toast.loading("Connecting to Twitter...");
+            const token = localStorage.getItem("token");
 
-  const handleEmojiClick = useCallback((emojiData) => {
-    const textarea = document.getElementById('post-textarea');
-    if (!textarea) return;
-    
-    const startPos = textarea.selectionStart;
-    const endPos = textarea.selectionEnd;
-    
-    setText(prev => {
-      const newText = prev.substring(0, startPos) + 
-                    emojiData.emoji + 
-                    prev.substring(endPos);
-      return newText.length <= maxChars ? newText : prev;
-    });
-  
-    setTimeout(() => {
-      textarea.selectionStart = textarea.selectionEnd = startPos + emojiData.emoji.length;
-      textarea.focus();
-    }, 0);
-  }, [maxChars]);
+            axios.post(getBaseURL() + "/oauth/twitter/get-token", {
+                oauth_token: queryParams.oauth_token,
+                oauth_verifier: queryParams.oauth_verifier,
+            }, {headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            })
+            .then((res) => {
+                if (res.status === 200) {
+                    toast.success(res.data.message, { id: toastId });
+                }
+                navigate("/dashboard");
+            })
+            .catch((err) => {
+                console.log(err);
+                toast.error(err.response.data.message, { id: toastId });
+                navigate("/dashboard");
+            });
+        }
+    }, [location, navigate]);
 
-  const handleVerifyClick = () => {
-    setVerifiedText(text);
-    setIsVerified(true);
-  };
+    useEffect(() => {
+        return () => {
+            mediaFiles.forEach(file => {
+              if (file.url) URL.revokeObjectURL(file.url);
+            });
+        };
+    }, [mediaFiles]);
 
-  return (
-    <Box flex={1} p={6} overflowY="auto">
-      <Header
-        username={username}
-        profileImage={profileImage}
-        notificationsCount={notificationsCount}
-        clearNotifications={() => setNotificationsCount(0)}
-        profileModal={profileModal}
-        settingsModal={settingsModal}
-        infoModal={infoModal}
-      />
-      <ProfileModal
-        isOpen={profileModal.isOpen}
-        onClose={profileModal.onClose}
-        username={username}
-        setUsername={setUsername}
-        profileImage={profileImage}
-        profileFileInputRef={profileFileInputRef}
-      />
-      <SettingsModal isOpen={settingsModal.isOpen} onClose={settingsModal.onClose} />
-      <InfoModal isOpen={infoModal.isOpen} onClose={infoModal.onClose} />
-      <Box mb={6}>
-        <Text fontSize="xl" fontWeight="bold" mb={4}>
-          Write Something
-        </Text>
+    const handleEmojiClick = useCallback((emojiData) => {
+        const textarea = document.getElementById('post-textarea');
+        if (!textarea) return;
+        const startPos = textarea.selectionStart;
+        const endPos = textarea.selectionEnd;
         
-        <TextEditor
-          text={text}
-          maxChars={maxChars}
-          handleTextChange={handleTextChange}
-          isEmojiPickerOpen={isEmojiPickerOpen}
-          setIsEmojiPickerOpen={setIsEmojiPickerOpen}
-          handleEmojiClick={handleEmojiClick}
-          colorMode={colorMode}
-          onOpen={onOpen}
-          isUploading={isUploading}
-          uploadError={uploadError}
-          handleVerifyClick={handleVerifyClick}
-        />
-      </Box>
+        setCaption(prev => {
+            const newText = prev.substring(0, startPos) + emojiData.emoji + prev.substring(endPos);
+            return newText.length <= maxChars ? newText : prev;
+        });
+      
+        setTimeout(() => {
+            textarea.selectionStart = textarea.selectionEnd = startPos + emojiData.emoji.length;
+            textarea.focus();
+        }, 0);
+    }, [maxChars]);
 
-      {mediaFiles.length > 0 && (
-        <MediaPreview mediaFiles={mediaFiles} removeMedia={(id) => setMediaFiles(mediaFiles.filter(file => file.id !== id))} />
-      )}
-
-<MediaUploadModal
-  isOpen={isOpen}
-  onClose={onClose}
-  handleMediaUpload={(files) => {
-    const file = files[0]; // Only take the first file
-    if (!file) return;
-
-    const newMedia = {
-      url: URL.createObjectURL(file),
-      type: file.type.startsWith("image") ? "image" : "video",
-      id: Math.random().toString(36).substring(2, 9),
-      file
+    const handleVerifyClick = () => {
+        setVerifiedText(caption);
+        setIsVerified(true);
     };
 
-    setMediaFiles([newMedia]); // Always replace existing media
-  }}
-  mediaFiles={mediaFiles}
-  setUploadError={setUploadError}
-  uploadError={uploadError}
-/>
 
 
-      <SocialMediaPreview text={verifiedText} isVerified={isVerified} maxChars={maxChars} mediaFiles={mediaFiles} />
-    </Box>
-  );
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    return (
+        <Box flex={1} p={6} overflowY="auto">
+            <Header
+                username={username}
+                notificationsCount={notificationsCount}
+                clearNotifications={() => setNotificationsCount(0)}
+                profileModal={profileModal}
+                settingsModal={settingsModal}
+                infoModal={infoModal}
+            />
+            <ProfileModal
+                isOpen={profileModal.isOpen}
+                onClose={profileModal.onClose}
+                username={username}
+                setUsername={setUsername}
+                profileFileInputRef={profileFileInputRef}
+            />
+            <SettingsModal isOpen={settingsModal.isOpen} onClose={settingsModal.onClose} />
+            <InfoModal isOpen={infoModal.isOpen} onClose={infoModal.onClose} />
+
+            {/* Main part */}
+            <Box mb={6}>
+                <Text fontSize="xl" fontWeight="bold" mb={4}>
+                    Write Something
+                </Text>
+                
+                <TextEditor
+                    text={caption}
+                    maxChars={maxChars}
+                    handleTextChange={(e)=>setCaption(e.target.value)}
+                    isEmojiPickerOpen={isEmojiPickerOpen}
+                    setIsEmojiPickerOpen={setIsEmojiPickerOpen}
+                    handleEmojiClick={handleEmojiClick}
+                    colorMode={colorMode}
+                    onOpen={onOpen}
+                    isUploading={isUploading}
+                    uploadError={uploadError}
+                    handleVerifyClick={handleVerifyClick}
+                />
+            </Box>
+
+            {mediaFiles.length > 0 && (
+                <MediaPreview mediaFiles={mediaFiles} removeMedia={(id) => setMediaFiles(mediaFiles.filter(file => file.id !== id))} />
+            )}
+            
+
+            <MediaUploadModal
+                isOpen={isOpen}
+                onClose={onClose}
+                handleMediaUpload={(files) => {
+                    const file = files[0]; // Only take the first file
+                    if (!file) return;
+
+                    const newMedia = {
+                        url: URL.createObjectURL(file),
+                        type: file.type.startsWith("image") ? "image" : "video",
+                        id: Math.random().toString(36).substring(2, 9),
+                        file
+                    };
+
+                    setMediaFiles([newMedia]); // Always replace existing media
+                }}
+                mediaFiles={mediaFiles}
+                setUploadError={setUploadError}
+                uploadError={uploadError}
+            />
+
+            <SocialMediaPreview text={verifiedText} isVerified={isVerified} maxChars={maxChars} mediaFiles={mediaFiles} />
+        </Box>
+    );
 }

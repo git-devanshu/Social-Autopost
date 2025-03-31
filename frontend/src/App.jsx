@@ -8,8 +8,8 @@ import Signup from './pages/Signup';
 import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
 import NotFound from './pages/NotFound';
-import Dashboard from './pages/Dashboard';
-import ConnectProfiles from './pages/ConnectProfiles';
+import AutoPost from './pages/Dashboard1';
+import Connect from './pages/Connect';
 
 export default function App() {
     return (
@@ -22,15 +22,15 @@ export default function App() {
                     <Route path='/forgot-password' element={<ForgotPassword />} />
                     <Route path='/reset-password/:email' element={<ResetPassword />} />
 
-                    {/* Main Page */}
-                    <Route path='/dashboard' element={<ProtectedDashboard />} />
+                    {/* Main Pages */}
+                    {/* <Route path='/dashboard' element={<ProtectedDashboard />} /> */}
                     <Route path='/connect-profiles' element={<ProtectedConnectProfiles />} />
-                    {/* <Route path='/' element={< />} /> */}
-                    {/* <Route path='/' element={< />} /> */}
+                    {/* <Route path='/schedule-posts' element={< />} /> */}
+                    {/* <Route path='/history' element={< />} /> */}
                     {/* <Route path='/' element={< />} /> */}
                     {/* <Route path='/' element={< />} /> */}
         
-                    {/* Fallback route 404 Not found page */}
+                    {/* Fallback route : 404 Not found page */}
                     <Route path='*' element={<NotFound />} />
                 </Routes>
             </BrowserRouter>
@@ -52,7 +52,7 @@ const CheckLoggedIn = () =>{
 const ProtectedDashboard = () =>{
     const token = localStorage.getItem('token');
     if(token){
-        return <Dashboard />
+        return <AutoPost />
     }
     else{
         return <Navigate to='/' />
@@ -62,7 +62,7 @@ const ProtectedDashboard = () =>{
 const ProtectedConnectProfiles = () =>{
     const token = localStorage.getItem('token');
     if(token){
-        return <ConnectProfiles />
+        return <Connect />
     }
     else{
         return <Navigate to='/' />

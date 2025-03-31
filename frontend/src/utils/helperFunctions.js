@@ -54,26 +54,6 @@ export function decodeToken(token) {
     }
 }
 
-// generates a random code verifier for twitter OAuth
-export function generateCodeVerifier(){
-    const randomString = [...crypto.getRandomValues(new Uint8Array(32))]
-        .map((x) => x.toString(16).padStart(2, "0"))
-        .join("");
-    return btoa(randomString).replace(/=/g, "").replace(/\+/g, "-").replace(/\//g, "_");
-};
-
-// encodes the code verifier into base 64
-export async function generateCodeChallenge(codeVerifier){
-    const encoder = new TextEncoder();
-    const data = encoder.encode(codeVerifier);
-    const hash = await crypto.subtle.digest("SHA-256", data);
-    const base64 = btoa(String.fromCharCode(...new Uint8Array(hash)))
-        .replace(/=/g, "")
-        .replace(/\+/g, "-")
-        .replace(/\//g, "_");
-    return base64;
-};
-
 export function getBaseURL(){
     return 'http://localhost:5000';
 }

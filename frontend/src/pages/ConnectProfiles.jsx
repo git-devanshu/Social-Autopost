@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import {Stack, Button} from '@chakra-ui/react';
 import {toast} from 'react-hot-toast';
 import { FaInstagram, FaFacebook, FaLinkedin, FaTwitter } from "react-icons/fa";
-import {getBaseURL, decodeToken, generateCodeVerifier, generateCodeChallenge} from '../utils/helperFunctions';
+import {getBaseURL, decodeToken} from '../utils/helperFunctions';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 

@@ -1,10 +1,11 @@
-import { 
-    Box, VStack, HStack, Text, IconButton, Textarea, Button
-} from "@chakra-ui/react";
-import { FaPencilAlt, FaCheck, FaTwitter, FaInstagram, FaLinkedin, FaFacebook } from "react-icons/fa";
-import { useState, useEffect } from "react";
+import {Box, VStack, HStack, Text, IconButton, Textarea, Button} from "@chakra-ui/react";
+import {FaPencilAlt, FaCheck, FaTwitter, FaInstagram, FaLinkedin, FaFacebook} from "react-icons/fa";
+import {useState, useEffect} from "react";
+import {toast} from 'react-hot-toast';
 
 export default function SocialMediaPreview({ text, isVerified }) {
+    const [isDisabled, setIsDisabled] = useState(false); //to check if uploading is underway and disable other buttons
+    
     const platforms = [
         { name: "Twitter", color: "blue.100", textColor: "blue.600", border: "2px solid #1AA2F8", maxChars: 280, icon: FaTwitter, colorScheme: "twitter", bgColor: "#1DA1F2" },
         { name: "Instagram", color: "red.100", textColor: "red.600", border: "2px solid #FF4D4C", maxChars: 2200, icon: FaInstagram, colorScheme: "pink", bgColor: "#E1306C" },
@@ -24,6 +25,29 @@ export default function SocialMediaPreview({ text, isVerified }) {
             setEditableTexts(platforms.reduce((acc, platform) => ({ ...acc, [platform.name]: text }), {}));
         }
     }, [isVerified, text]);
+
+
+    const uploadPost = (platform) =>{
+        setIsDisabled(true);
+        const token = localStorage.getItem('token');
+        const toastId = toast.loading('Uploading, Please wait...');
+        axios.post(getBaseURL() + `/upload/${platform}`, {caption, mediaURL, mediaType}, {headers : {
+            authorization : `Bearer ${token}`
+        }})
+        .then(res => {
+            if(res.status === 200){
+                toast.success(res.data.message, {id: toastId});
+                console.log(res.data.response);
+            }
+            setIsDisabled(false);
+        })
+        .catch(err => {
+            console.log(err);
+            setIsDisabled(false);
+            toast.error(err.response.data.message, {id: toastId});
+        });
+    }
+
 
     const handleEditClick = (platformName) => {
         setEditing(prev => ({ ...prev, [platformName]: !prev[platformName] }));
