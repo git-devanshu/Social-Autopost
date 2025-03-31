@@ -77,7 +77,7 @@ export default function VideoUpload({onUpload, h, w}) {
                         <span style={{ color: "gray" }}>Uploading video...</span>
                     ) : (
                         <>
-                            <span style={{ color: "gray", display: "block" }}>Click to upload video</span>
+                            <span style={{ color: "gray", display: "block" }}>Click to upload Video</span>
                             <span style={{ color: "gray", fontSize: "0.8rem", display: "block", marginTop: "0.5rem" }}>
                                 (MP4, MOV - max 15MB)
                             </span>

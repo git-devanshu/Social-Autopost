@@ -23,18 +23,18 @@ export default function App() {
                     <Route path='/reset-password/:email' element={<ResetPassword />} />
 
                     {/* Main Pages */}
-                    {/* <Route path='/dashboard' element={<ProtectedDashboard />} /> */}
+                    <Route path='/dashboard' element={<ProtectedDashboard />} />
                     <Route path='/connect-profiles' element={<ProtectedConnectProfiles />} />
                     {/* <Route path='/schedule-posts' element={< />} /> */}
                     {/* <Route path='/history' element={< />} /> */}
-                    {/* <Route path='/' element={< />} /> */}
+                    {/* <Route path='/profile' element={< />} /> */}
                     {/* <Route path='/' element={< />} /> */}
         
                     {/* Fallback route : 404 Not found page */}
                     <Route path='*' element={<NotFound />} />
                 </Routes>
             </BrowserRouter>
-            <Toaster/>
+            <Toaster position="top-right" toastOptions={{style: {background: '#ddd', color: '#111111', borderRadius: '10px', padding: '12px 16px', fontSize: '14px', border: '1px solid #666'}}} />
         </ChakraProvider>
     )
 }

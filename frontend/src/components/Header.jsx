@@ -1,16 +1,16 @@
 import { Flex, Box, HStack, Text, IconButton, Badge, Tooltip, Avatar, Menu, MenuButton, MenuList, MenuItem } from "@chakra-ui/react";
 import { FaInfoCircle, FaCog, FaBell, FaUserEdit, FaSignOutAlt } from "react-icons/fa";
 import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
-export default function Header({ 
-  username, 
-  profileImage, 
-  notificationsCount, 
-  clearNotifications, 
-  profileModal, 
-  settingsModal, 
-  infoModal 
-}) {
+export default function Header({username, profileImage, profileModal, settingsModal, infoModal }){
+  const navigate = useNavigate();
+
+  const logout = () =>{
+    localStorage.removeItem('token');
+    navigate('/');
+  }
+
   return (
     <Flex justifyContent="space-between" alignItems="center" mb={8}>
       <Text fontSize="2xl" fontWeight="bold">
@@ -36,29 +36,6 @@ export default function Header({
           />
         </Tooltip>
         
-        <Tooltip label="Notifications" hasArrow>
-          <Box position="relative">
-            <IconButton
-              icon={<FaBell />}
-              aria-label="Notifications"
-              variant="ghost"
-              onClick={clearNotifications}
-            />
-            {notificationsCount > 0 && (
-              <Badge
-                colorScheme="red"
-                borderRadius="full"
-                position="absolute"
-                top="-2px"
-                right="-2px"
-                fontSize="0.6em"
-              >
-                {notificationsCount}
-              </Badge>
-            )}
-          </Box>
-        </Tooltip>
-        
         <Menu>
           <MenuButton>
             <Avatar 
@@ -76,8 +53,8 @@ export default function Header({
               Edit Profile
             </MenuItem>
             </Link>
-            <MenuItem icon={<FaSignOutAlt />} color="red.500">
-              Log Out
+            <MenuItem icon={<FaSignOutAlt />} color="red.500" onClick={logout}>
+              Logout
             </MenuItem>
           </MenuList>
         </Menu>

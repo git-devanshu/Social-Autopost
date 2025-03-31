@@ -2,8 +2,10 @@ import {Box, VStack, HStack, Text, IconButton, Textarea, Button} from "@chakra-u
 import {FaPencilAlt, FaCheck, FaTwitter, FaInstagram, FaLinkedin, FaFacebook} from "react-icons/fa";
 import {useState, useEffect} from "react";
 import {toast} from 'react-hot-toast';
+import axios from 'axios';
+import {getBaseURL} from '../utils/helperFunctions';
 
-export default function SocialMediaPreview({ text, isVerified }) {
+export default function SocialMediaPreview({ caption, isVerified, mediaURL, mediaType }) {
     const [isDisabled, setIsDisabled] = useState(false); //to check if uploading is underway and disable other buttons
     
     const platforms = [
@@ -16,22 +18,22 @@ export default function SocialMediaPreview({ text, isVerified }) {
     const [editableTexts, setEditableTexts] = useState(
         platforms.reduce((acc, platform) => ({ ...acc, [platform.name]: "" }), {})
     );
+
     const [editing, setEditing] = useState(
         platforms.reduce((acc, platform) => ({ ...acc, [platform.name]: false }), {})
     );
 
     useEffect(() => {
-        if (isVerified) {
-            setEditableTexts(platforms.reduce((acc, platform) => ({ ...acc, [platform.name]: text }), {}));
+        if(isVerified){
+            setEditableTexts(platforms.reduce((acc, platform) => ({ ...acc, [platform.name]: caption }), {}));
         }
-    }, [isVerified, text]);
+    }, [isVerified, caption]);
 
-
-    const uploadPost = (platform) =>{
+    const uploadPost = (platform, uploadText) =>{
         setIsDisabled(true);
         const token = localStorage.getItem('token');
         const toastId = toast.loading('Uploading, Please wait...');
-        axios.post(getBaseURL() + `/upload/${platform}`, {caption, mediaURL, mediaType}, {headers : {
+        axios.post(getBaseURL() + `/upload/${platform}`, {caption : uploadText, mediaURL, mediaType}, {headers : {
             authorization : `Bearer ${token}`
         }})
         .then(res => {
@@ -47,7 +49,6 @@ export default function SocialMediaPreview({ text, isVerified }) {
             toast.error(err.response.data.message, {id: toastId});
         });
     }
-
 
     const handleEditClick = (platformName) => {
         setEditing(prev => ({ ...prev, [platformName]: !prev[platformName] }));
@@ -95,6 +96,7 @@ export default function SocialMediaPreview({ text, isVerified }) {
                                     onClick={() => handleEditClick(platform.name)}
                                 />
                             </HStack>
+
                             {editing[platform.name] ? (
                                 <Textarea
                                     value={editableTexts[platform.name]}
@@ -104,9 +106,11 @@ export default function SocialMediaPreview({ text, isVerified }) {
                             ) : (
                                 <Text>{editableTexts[platform.name] || "No content yet. Click verify to preview!"}</Text>
                             )}
+
                             <Text fontSize="sm" color={isExceedingLimit ? "red.500" : "gray.500"}>
                                 {editableTexts[platform.name].length}/{platform.maxChars} characters
                             </Text>
+
                             {isExceedingLimit && (
                                 <Text fontSize="sm" color="red.500">Character limit exceeded for {platform.name}!</Text>
                             )}
@@ -119,6 +123,8 @@ export default function SocialMediaPreview({ text, isVerified }) {
                                     color="white" 
                                     _hover={{ bg: platform.bgColor, opacity: 0.8 }}
                                     _active={{ bg: platform.bgColor, opacity: 0.6 }}
+                                    disabled={isDisabled}
+                                    onClick={()=> uploadPost(platform.name, editableTexts[platform.name])}
                                 >
                                     Post to {platform.name}
                                 </Button>

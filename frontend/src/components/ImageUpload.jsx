@@ -56,7 +56,12 @@ export default function ImageUpload({ onUpload, h, w }) {
             {image ? (
                 <img src={image} alt="Preview" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
             ) : (
-                <span style={{ color: "gray" }}>{uploading ? "Uploading..." : "Click to Upload"}</span>
+                <span style={{ color: "gray" }}>
+                    {uploading ? "Uploading..." : "Click to Upload Image"}
+                    <span style={{ color: "gray", fontSize: "0.8rem", display: "block", marginTop: "0.5rem" }}>
+                        (JPG, JPEG, PNG - max 15MB)
+                    </span>
+                </span>
             )}
         </div>
     );
