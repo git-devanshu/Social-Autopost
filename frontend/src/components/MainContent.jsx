@@ -113,22 +113,27 @@ export default function MainContent() {
         <MediaPreview mediaFiles={mediaFiles} removeMedia={(id) => setMediaFiles(mediaFiles.filter(file => file.id !== id))} />
       )}
 
-      <MediaUploadModal
-        isOpen={isOpen}
-        onClose={onClose}
-        handleMediaUpload={(files) => {
-          const newMedia = Array.from(files).map(file => ({
-            url: URL.createObjectURL(file),
-            type: file.type.startsWith("image") ? "image" : "video",
-            id: Math.random().toString(36).substring(2, 9),
-            file
-          }));
-          setMediaFiles(prev => [...prev, ...newMedia]);
-        }}
-        mediaFiles={mediaFiles}
-        setUploadError={setUploadError}
-        uploadError={uploadError}
-      />
+<MediaUploadModal
+  isOpen={isOpen}
+  onClose={onClose}
+  handleMediaUpload={(files) => {
+    const file = files[0]; // Only take the first file
+    if (!file) return;
+
+    const newMedia = {
+      url: URL.createObjectURL(file),
+      type: file.type.startsWith("image") ? "image" : "video",
+      id: Math.random().toString(36).substring(2, 9),
+      file
+    };
+
+    setMediaFiles([newMedia]); // Always replace existing media
+  }}
+  mediaFiles={mediaFiles}
+  setUploadError={setUploadError}
+  uploadError={uploadError}
+/>
+
 
       <SocialMediaPreview text={verifiedText} isVerified={isVerified} maxChars={maxChars} mediaFiles={mediaFiles} />
     </Box>

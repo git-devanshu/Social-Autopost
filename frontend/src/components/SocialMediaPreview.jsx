@@ -34,7 +34,22 @@ export default function SocialMediaPreview({ text, isVerified }) {
     };
 
     return (
-        <Box mt={6} maxH="450px" overflowY="auto" p={2} border="1px solid gray" borderRadius="md">
+        <Box mt={6} maxH="450px" overflowY="auto" p={2} border="1px solid gray" borderRadius="md" css={{
+            '&::-webkit-scrollbar': {
+                width: '8px',
+            },
+            '&::-webkit-scrollbar-track': {
+                background: '#f1f1f1',
+                borderRadius: '10px',
+            },
+            '&::-webkit-scrollbar-thumb': {
+                background: '#888',
+                borderRadius: '10px',
+            },
+            '&::-webkit-scrollbar-thumb:hover': {
+                background: '#555',
+            }
+        }}>
             <VStack spacing={4} align="stretch">
                 {platforms.map((platform, index) => {
                     const isExceedingLimit = editableTexts[platform.name].length > platform.maxChars;
@@ -42,9 +57,12 @@ export default function SocialMediaPreview({ text, isVerified }) {
                     return (
                         <Box key={index} bg={platform.color} p={4} borderRadius="md" border={platform.border}>
                             <HStack justifyContent="space-between">
-                                <Text color={platform.textColor} fontWeight="bold">
-                                    {platform.name}
-                                </Text>
+                                <HStack>
+                                    <Icon color={platform.textColor} />
+                                    <Text color={platform.textColor} fontWeight="bold">
+                                        {platform.name}
+                                    </Text>
+                                </HStack>
                                 <IconButton 
                                     icon={editing[platform.name] ? <FaCheck /> : <FaPencilAlt />} 
                                     size="sm" 

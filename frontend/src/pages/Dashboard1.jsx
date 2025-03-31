@@ -9,7 +9,7 @@ import {
     FaHistory, FaImage, FaVideo 
   } from "react-icons/fa";
   import { useState } from "react";
-  import Sidebar from "../components/Sidebar";
+  import Sidebar from "../components/sidebar";
   import SocialMediaPreview from "../components/SocialMediaPreview";
   import MainContent from "../components/MainContent";
   

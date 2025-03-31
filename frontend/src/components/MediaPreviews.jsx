@@ -23,7 +23,7 @@ export default function MediaPreview({ mediaFiles, removeMedia }) {
             overflow="hidden"
             border="1px solid"
             borderColor="gray.200"
-            w="150px"
+            w="250px"
             h="150px"
           >
             <IconButton
