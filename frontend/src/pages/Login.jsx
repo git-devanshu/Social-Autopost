@@ -92,7 +92,7 @@ const Login = () => {
                 />
             </InputGroup>
             
-            <Link href="./ForgotPassword.jsx" color="gray.500" fontSize="md" textAlign="right">Forget Password ?</Link>
+            <Link href="/forgot-password" color="gray.500" fontSize="md" textAlign="right">Forget Password ?</Link>
             
             <Button onClick={loginUser} colorScheme="orange" width="full" size="lg">Login</Button>
             

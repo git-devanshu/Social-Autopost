@@ -2,6 +2,7 @@ import React from 'react'
 import {BrowserRouter, Routes, Route, Navigate} from 'react-router-dom';
 import {Toaster} from 'react-hot-toast';
 import { ChakraProvider } from '@chakra-ui/react'
+import {decodeToken} from './utils/helperFunctions';
 
 import Login from './pages/Login';
 import Signup from './pages/Signup';
@@ -34,14 +35,30 @@ export default function App() {
                     <Route path='*' element={<NotFound />} />
                 </Routes>
             </BrowserRouter>
-            <Toaster position="top-right" toastOptions={{style: {background: '#ddd', color: '#111111', borderRadius: '10px', padding: '12px 16px', fontSize: '14px', border: '1px solid #666'}}} />
+            <Toaster
+                position='top-right'
+                toastOptions={{
+                    style: {
+                        background: "white",
+                        border: "1px solid #d1d5db",
+                        color: "#374151",
+                        fontSize: "16px",
+                    },
+                    success: {
+                        style: { border: "2px solid #22c55e" },
+                    },
+                    error: {
+                        style: { border: "2px solid #ef4444" },
+                    },
+                }}
+            />
         </ChakraProvider>
     )
 }
 
 const CheckLoggedIn = () =>{
-    const token = localStorage.getItem('token');
-    if(token){
+    const decodedToken = decodeToken(localStorage.getItem('token'));
+    if(decodedToken && decodedToken.id){
         return <Navigate to='/dashboard'/>
     }
     else{
@@ -50,8 +67,8 @@ const CheckLoggedIn = () =>{
 }
 
 const ProtectedDashboard = () =>{
-    const token = localStorage.getItem('token');
-    if(token){
+    const decodedToken = decodeToken(localStorage.getItem('token'));
+    if(decodedToken && decodedToken.id){
         return <AutoPost />
     }
     else{
@@ -60,8 +77,8 @@ const ProtectedDashboard = () =>{
 }
 
 const ProtectedConnectProfiles = () =>{
-    const token = localStorage.getItem('token');
-    if(token){
+    const decodedToken = decodeToken(localStorage.getItem('token'));
+    if(decodedToken && decodedToken.id){
         return <Connect />
     }
     else{

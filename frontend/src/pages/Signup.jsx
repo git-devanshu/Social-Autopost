@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from 'react-hot-toast';
 import { getBaseURL } from '../utils/helperFunctions';
 import { Box, Button, Flex, Heading, Input, InputGroup, InputLeftElement, Link, Stack, Text } from "@chakra-ui/react";
-import { EmailIcon, LockIcon } from "@chakra-ui/icons";
+import { EmailIcon, LockIcon, InfoIcon } from "@chakra-ui/icons";
 
 const Signup = () => {
     const navigate = useNavigate();
@@ -30,7 +30,6 @@ const Signup = () => {
             toast.error("Passwords do not match!");
             return;
         }
-
         const toastId = toast.loading('Registering...');
         axios.post(getBaseURL() + '/auth/signup', {
             email: user.email,
@@ -70,6 +69,21 @@ const Signup = () => {
                                 onChange={handleChange}
                                 required
                                 placeholder="Email" 
+                                focusBorderColor="green.400" 
+                            />
+                        </InputGroup>
+
+                        <InputGroup>
+                            <InputLeftElement pointerEvents="none">
+                                <InfoIcon color="gray.400" />
+                            </InputLeftElement>
+                            <Input 
+                                type="text"
+                                name="name"
+                                value={user.name}
+                                onChange={handleChange}
+                                required
+                                placeholder="Name" 
                                 focusBorderColor="green.400" 
                             />
                         </InputGroup>

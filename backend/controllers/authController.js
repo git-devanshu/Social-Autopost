@@ -23,7 +23,7 @@ const signup = async (req, res)=> {
             res.status(201).json({message: 'User created successfully'});
         }
         else{
-            res.status(400).json({ message : "Username already exists" });
+            res.status(400).json({ message : "Email already exists" });
         }
     }
     catch(error){
@@ -62,10 +62,12 @@ const login = async (req, res)=> {
 // @access - Public
 const forgotPassword = async (req, res)=> {
     try{
+        console.log('req received');
         const {email} = req.body;
         const user = await Users.findOne({email});
         if(user){
-            user.vfcode = generateVerificationCode(6);
+            const vfcode = generateVerificationCode(6);
+            user.vfcode = vfcode;
             await user.save();
             sendVFCodeMail(email, vfcode);
             res.status(200).json({ message : 'Verification code sent your email id'});
