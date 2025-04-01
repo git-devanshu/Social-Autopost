@@ -21,7 +21,6 @@ export default function App() {
                     <Route path='/' element={<CheckLoggedIn />} />
                     <Route path='/signup' element={<Signup />} />
                     <Route path='/forgot-password' element={<ForgotPassword />} />
-                    {/* <Route path='/reset-password/:email' element={<ResetPassword1 />} /> */}
 
                     {/* Main Pages */}
                     <Route path='/dashboard' element={<ProtectedDashboard />} />
@@ -38,18 +37,10 @@ export default function App() {
             <Toaster
                 position='top-right'
                 toastOptions={{
-                    style: {
-                        background: "white",
-                        border: "1px solid #d1d5db",
-                        color: "#374151",
-                        fontSize: "16px",
-                    },
-                    success: {
-                        style: { border: "2px solid #22c55e" },
-                    },
-                    error: {
-                        style: { border: "2px solid #ef4444" },
-                    },
+                    style: {background: "white", border: "1px solid #d1d5db", color: "#374151", fontSize: "16px",},
+                    success: {style: { border: "2px solid #22c55e" }},
+                    error: {style: { border: "2px solid #ef4444" }},
+                    loading : {style: {border: "2px solid #d1d5db"}}
                 }}
             />
         </ChakraProvider>

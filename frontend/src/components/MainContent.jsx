@@ -31,7 +31,7 @@ export default function MainContent() {
     useEffect(()=>{
         const token = localStorage.getItem('token');
         const decodedToken = decodeToken(token);
-        setUsername(decodedToken.email);
+        setUsername(decodedToken.name);
     }, []);
 
     const handleEmojiClick = useCallback((emojiData) => {

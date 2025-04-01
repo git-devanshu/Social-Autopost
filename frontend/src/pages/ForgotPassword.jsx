@@ -1,28 +1,56 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from 'axios';
 import { Box, Button, Flex, Heading, Input, Link, Stack, Text, Image, HStack, PinInput, PinInputField, Fade } from "@chakra-ui/react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import {toast} from 'react-hot-toast';
 import {getBaseURL} from '../utils/helperFunctions';
 
 const ForgotPassword = () => {
     const navigate = useNavigate();
+    const location = useLocation();
+
     const [email, setEmail] = useState('');
     const [vfcode, setVfcode] = useState('');
-    const [showVerification, setShowVerification] = useState(false);
-    const [showResetFields, setShowResetFields] = useState(false);
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');   
-    const [password, setPassword] = useState('');
+
+    const [showVerification, setShowVerification] = useState(false); //to show pin input
+    const [showResetFields, setShowResetFields] = useState(false); //to show new password field
+
+    const getQueryParams = (query) =>{
+        return query.substring(1).split('&')
+            .reduce((params, param) =>{
+                const [key, value] = param.split('=');
+                params[key] = value;
+                return params;
+            }, {});
+    };
+
+    // for managing the reset password flow using url parameters
+    useEffect(()=>{
+        const queryParams = getQueryParams(location.search);
+        if(queryParams.code === "true"){
+            setShowVerification(true);
+            setEmail(queryParams.email);
+        }
+        else if(queryParams.new_password === "true"){
+            setShowVerification(true);
+            setShowResetFields(true);
+            setEmail(queryParams.email);
+            setVfcode(queryParams.vfcode);
+        }
+    }, [navigate, location]);
 
     const verifyUser = (e) =>{
         e.preventDefault();
         const toastId = toast.loading('Verifying email...');
-        axios.post(getBaseURL() + '/auth/forgot-password', {email})
+        axios.post(getBaseURL() + '/auth/get-vfcode', {email})
         .then(res => {
             if(res.status === 200){
                 toast.success(res.data.message, {id :toastId});
-                setShowVerification(true);
+                setTimeout(()=>{
+                    navigate(`/forgot-password?code=true&email=${email}`);
+                }, 300);
             }
         })
         .catch(err =>{
@@ -31,23 +59,38 @@ const ForgotPassword = () => {
         });
     }
 
-    const confirmVerificationCode = () => {
-        setShowResetFields(true);
+    const verifyCode = (e) =>{
+        e.preventDefault();
+        const toastId = toast.loading('Checking Verification Code...');
+        axios.post(getBaseURL() + '/auth/verify-vfcode', {vfcode, email})
+        .then(res =>{
+            if(res.status === 200){
+                toast.success(res.data.message, {id :toastId});
+                setTimeout(()=>{
+                    navigate(`/forgot-password?new_password=true&email=${email}&vfcode=${vfcode}`);
+                }, 300);
+            }
+        })
+        .catch(err =>{
+            console.log(err);
+            toast.error(err.response.data.message, {id :toastId});
+        });
     }
 
     const resetPassword = (e) =>{
         e.preventDefault();
+        if(newPassword !== confirmPassword){
+            toast.error('Enter the same password');
+            return;
+        }
         const toastId = toast.loading('Setting new password...');
-        axios.post(getBaseURL()+'/auth/reset-password', {vfcode, password, email})
+        axios.post(getBaseURL() + '/auth/reset-password', {newPassword, email, vfcode})
         .then(res =>{
             if(res.status === 200){
                 toast.success(res.data.message, {id :toastId});
                 setTimeout(()=>{
                     navigate('/')
-                }, 1500);
-            }
-            else{
-                toast.error(res.data.message, {id :toastId});
+                }, 1000);
             }
         })
         .catch(err =>{
@@ -55,7 +98,6 @@ const ForgotPassword = () => {
             toast.error(err.response.data.message, {id :toastId});
         });
     }
-
 
     return (
         <Flex height="100vh" alignItems="center" justifyContent="center" bg="#5EBD81" px={6}>
@@ -92,7 +134,7 @@ const ForgotPassword = () => {
                         ) : !showResetFields ? (
                             <Fade in={showVerification}>
                                 <Stack spacing={4}>
-                                    <Text color="gray.600">Enter Verification Code.</Text>
+                                    <Text color="gray.600">Enter Verification Code sent to your registered email address.</Text>
                                     <HStack justifyContent="center">
                                         <PinInput type="number" value={vfcode} onChange={(value) => setVfcode(value)}>
                                             <PinInputField />
@@ -106,7 +148,7 @@ const ForgotPassword = () => {
                                     <Button 
                                         colorScheme="orange" 
                                         width="full"
-                                        onClick={confirmVerificationCode}
+                                        onClick={verifyCode}
                                     >
                                         Confirm
                                     </Button>
@@ -115,7 +157,7 @@ const ForgotPassword = () => {
                         ) : (
                             <Fade in={showResetFields}>
                                 <Stack spacing={4}>
-                                    <Text color="gray.600">Set New Password !</Text>
+                                    <Text color="gray.600">Enter the New Password for your account.</Text>
                                     <Input 
                                         type="password"
                                         name="password"

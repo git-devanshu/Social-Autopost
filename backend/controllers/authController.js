@@ -58,9 +58,9 @@ const login = async (req, res)=> {
 }
 
 // @desc   - send verification code on registered email id
-// @route  - POST /auth/forgot-password
+// @route  - POST /auth/get-vfcode
 // @access - Public
-const forgotPassword = async (req, res)=> {
+const getVfCode = async (req, res)=> {
     try{
         console.log('req received');
         const {email} = req.body;
@@ -81,19 +81,17 @@ const forgotPassword = async (req, res)=> {
     }
 }
 
-// @desc   - verify the code and set new password
-// @route  - POST /auth/reset-password
+// @desc   - verify the code
+// @route  - POST /auth/verify-vfcode
 // @access - Public
-const resetPassword = async (req, res)=> {
+const verifyVfCode = async (req, res)=> {
     try{
-        const {vfcode, password, email} = req.body;
+        const {vfcode, email} = req.body;
         const user = await Users.findOne({email});
         if(user){
             const savedVfCode = user.vfcode;
             if(savedVfCode == vfcode){
-                const hashedPass = await bcrypt.hash(password, 10);
-                await user.updateOne({password : hashedPass, vfcode : '0'});
-                res.status(200).json({ message : 'Password reset successful'});
+                res.status(200).json({ message : 'Verification Successful'});
             }
             else{
                 res.status(403).json({ message : 'Invalid verification code'});
@@ -108,9 +106,38 @@ const resetPassword = async (req, res)=> {
     }
 }
 
+// @desc   - set new password
+// @route  - POST /auth/reset-password
+// @access - Public
+const resetPassword = async (req, res)=> {
+    try{
+        const {newPassword, email, vfcode} = req.body;
+        const user = await Users.findOne({email});
+        if(user){
+            if(user.vfcode === vfcode){
+                const hashedPass = await bcrypt.hash(newPassword, 10);
+                user.password = hashedPass;
+                user.vfcode = "0";
+                await user.save();
+                res.status(200).json({ message : 'Password reset successful'});
+            }
+            else{
+                res.status(400).json({ message : "Invalid Request" });
+            }
+        }
+        else{
+            res.status(404).json({ message : 'User not found'});
+        }
+    }
+    catch(error){
+        res.status(500).json({ message : 'Internal Server Error' });
+    }
+}
+
 module.exports = {
     signup,
     login,
-    forgotPassword,
+    getVfCode,
+    verifyVfCode,
     resetPassword,
 };
