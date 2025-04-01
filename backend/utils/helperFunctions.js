@@ -38,10 +38,12 @@ const sendVFCodeMail = (emailid, vfcode)=>{
             to : emailid,
             subject : 'Reset Password',
             text : `
-A request to reset the password for your Socail Autopost account was initiated. 
-Use the following verification code to reset your password.
+Verification Code : ${vfcode}
 
-${vfcode}
+A request to reset your Social Autopost account password was received.
+This is your one time verification code to set a new password.
+
+In case its not you, do not share this code with anyone else.
 
 Thankyou...
 Team Social Autopost`
