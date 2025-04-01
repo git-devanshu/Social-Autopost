@@ -57,7 +57,7 @@ const Login = () => {
       {/* Right Section */}
       <Center flex={1} bg="white">
         <Box p={10} borderWidth={1} borderRadius="lg" borderColor="green.400" boxShadow="md" width="sm">
-          <Heading size="lg" textAlign="center" color="green.600" mb={8}>Login</Heading>
+          <Heading size="lg" textAlign="center" color="green.400" mb={8}>Login</Heading>
           
           <Stack spacing={5}>
             <InputGroup>

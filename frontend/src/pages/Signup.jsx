@@ -55,7 +55,7 @@ const Signup = () => {
             {/* Left Section */}
             <Box flex={1} bg="white" display="flex" alignItems="center" justifyContent="center" p={12}>
                 <Box p={10} borderWidth={1} borderRadius="lg" borderColor="green.400" boxShadow="md" width="sm">
-                    <Heading size="lg" textAlign="center" color="green.600" mb={8}>SignUp</Heading>
+                    <Heading size="lg" textAlign="center" color="green.400" mb={8}>SignUp</Heading>
                     
                     <Stack spacing={5}>
                         <InputGroup>

@@ -7,9 +7,9 @@ import {decodeToken} from './utils/helperFunctions';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
 import ForgotPassword from './pages/ForgotPassword';
-import ResetPassword from './pages/ResetPassword';
+// import ResetPassword from './pages/ResetPassword';
 import NotFound from './pages/NotFound';
-import AutoPost from './pages/Dashboard1';
+import AutoPost from './pages/Dashboard';
 import Connect from './pages/Connect';
 
 export default function App() {
@@ -21,7 +21,7 @@ export default function App() {
                     <Route path='/' element={<CheckLoggedIn />} />
                     <Route path='/signup' element={<Signup />} />
                     <Route path='/forgot-password' element={<ForgotPassword />} />
-                    <Route path='/reset-password/:email' element={<ResetPassword />} />
+                    {/* <Route path='/reset-password/:email' element={<ResetPassword1 />} /> */}
 
                     {/* Main Pages */}
                     <Route path='/dashboard' element={<ProtectedDashboard />} />
