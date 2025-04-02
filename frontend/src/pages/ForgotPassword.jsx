@@ -166,7 +166,7 @@ const ForgotPassword = () => {
                                 </Stack>
                             ) : (
                                 <Stack spacing={4}>
-                                    <Heading size="3xl" color="green.400">Don't Forget This One 😊</Heading>
+                                    <Heading size="3xl" color="green.400">Don't Forget This One<span style={{fontSize:"6vh"}}>😊</span></Heading>
                                     <Text color="gray.600">Set New Password!</Text>
                                     <Input 
                                         type="password"
