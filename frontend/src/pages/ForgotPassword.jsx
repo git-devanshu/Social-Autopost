@@ -46,6 +46,10 @@ const ForgotPassword = () => {
 
     const verifyUser = (e) =>{
         e.preventDefault();
+        if(email === ""){
+            toast.error('Please enter your email address');
+            return;
+        }
         const toastId = toast.loading('Verifying email...');
         axios.post(getBaseURL() + '/auth/get-vfcode', {email})
         .then(res => {
@@ -64,6 +68,10 @@ const ForgotPassword = () => {
 
     const verifyCode = (e) =>{
         e.preventDefault();
+        if(vfcode === ""){
+            toast.error('Please enter the verification code');
+            return;
+        }
         const toastId = toast.loading('Checking Verification Code...');
         axios.post(getBaseURL() + '/auth/verify-vfcode', {vfcode, email})
         .then(res =>{
@@ -82,7 +90,11 @@ const ForgotPassword = () => {
 
     const resetPassword = (e) =>{
         e.preventDefault();
-        if(newPassword !== confirmPassword){
+        if(newPassword === "" || confirmPassword === ""){
+            toast.error('Please enter the new password');
+            return;
+        }
+        else if(newPassword !== confirmPassword){
             toast.error('Enter the same password');
             return;
         }
@@ -120,8 +132,6 @@ const ForgotPassword = () => {
                     {/* Right Section with Form */}
                     <Box flex={1} p={6}>
                         <Stack spacing={6} textAlign="left">
-                            
-                            
                             {!showVerification ? (
                                 <>
                                     <Heading size="3xl" color="green.400">Forgot Password?</Heading>
@@ -199,9 +209,6 @@ const ForgotPassword = () => {
                 </Box>
             </ScaleFade>
         </Flex>
-
-
-
     );
 };
 

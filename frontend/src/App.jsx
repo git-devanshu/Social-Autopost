@@ -7,7 +7,6 @@ import {decodeToken} from './utils/helperFunctions';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
 import ForgotPassword from './pages/ForgotPassword';
-// import ResetPassword from './pages/ResetPassword';
 import NotFound from './pages/NotFound';
 import AutoPost from './pages/Dashboard';
 import Connect from './pages/Connect';
@@ -37,10 +36,10 @@ export default function App() {
             <Toaster
                 position='top-right'
                 toastOptions={{
-                    style: {background: "white", border: "1px solid #d1d5db", color: "#374151", fontSize: "16px",},
-                    success: {style: { border: "2px solid #22c55e" }},
-                    error: {style: { border: "2px solid #ef4444" }},
-                    loading : {style: {border: "2px solid #d1d5db"}}
+                    style: {background: "white", color: "#374151", fontSize: "15px", height: '60px', width: '400px', borderRadius: '8px', borderLeft: '12px solid #666'},
+                    success: {style: { borderLeft: "12px solid #22c55e" }},
+                    error: {style: { borderLeft: "12px solid #ef4444" }},
+                    loading : {style: {borderLeft: "12px solid #d1d5db"}}
                 }}
             />
         </ChakraProvider>

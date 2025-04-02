@@ -47,62 +47,64 @@ const Login = () => {
 
     return (
         <Flex height="100vh">
-      {/* Left Section */}
-      <Box flex={1} bg="green.400" color="white" display="flex" alignItems="center" justifyContent="center" p={12}>
-        <Text fontSize="5xl" fontWeight="bold">
-          One Dashboard, Infinite Possibilities. Sign in to Take Control!
-        </Text>
-      </Box>
-      
-      {/* Right Section */}
-      <Center flex={1} bg="white">
-        <Box p={10} borderWidth={1} borderRadius="lg" borderColor="green.400" boxShadow="md" width="sm">
-          <Heading size="lg" textAlign="center" color="green.400" mb={8}>Login</Heading>
-          
-          <Stack spacing={5}>
-            <InputGroup>
-                <InputLeftElement pointerEvents="none">
-                    <EmailIcon color="gray.400" />
-                </InputLeftElement>
-                <Input 
-                    type="text"
-                    name="email"
-                    value={user.email}
-                    onChange={handleChange}
-                    required 
-                    placeholder="Email" 
-                    focusBorderColor="green.400" 
-                />
-            </InputGroup>
-            
-            <InputGroup>
-                <InputLeftElement pointerEvents="none">
-                    <LockIcon color="gray.400" />
-                </InputLeftElement>
-                <Input 
-                    type="password"
-                    name="password"
-                    value={user.password}
-                    onChange={handleChange}
-                    required
-                    minLength={8}
-                    maxLength={30}
-                    placeholder="Password" 
-                    focusBorderColor="green.400" 
-                />
-            </InputGroup>
-            
-            <Link href="/forgot-password" color="gray.500" fontSize="md" textAlign="right">Forgot Password ?</Link>
-            
-            <Button onClick={loginUser} colorScheme="orange" width="full" size="lg">Login</Button>
-            
-            <Text fontSize="md" color="gray.500" textAlign="center">
-              New user ? <Link onClick={navigateToSignup} color="green.500">SignUp</Link>
+        {/* Left Section */}
+        <Box flex={1} bg="green.400" color="white" display="flex" alignItems="center" justifyContent="center" p={12}>
+            <Text fontSize="5xl" fontWeight="bold">
+            One Dashboard, Infinite Possibilities. Sign in to Take Control!
             </Text>
-          </Stack>
         </Box>
-      </Center>
-    </Flex>
+      
+        {/* Right Section */}
+        <Center flex={1} bg="white">
+            <Box p={10} borderWidth={1} borderRadius="lg" borderColor="green.400" boxShadow="md" width="sm">
+            <Heading size="lg" textAlign="center" color="green.400" mb={8}>Login</Heading>
+            
+            <form onSubmit={loginUser}>
+                <Stack spacing={5}>
+                    <InputGroup>
+                        <InputLeftElement pointerEvents="none">
+                            <EmailIcon color="gray.400" />
+                        </InputLeftElement>
+                        <Input 
+                            type="text"
+                            name="email"
+                            value={user.email}
+                            onChange={handleChange}
+                            required 
+                            placeholder="Email" 
+                            focusBorderColor="green.400" 
+                        />
+                    </InputGroup>
+                    
+                    <InputGroup>
+                        <InputLeftElement pointerEvents="none">
+                            <LockIcon color="gray.400" />
+                        </InputLeftElement>
+                        <Input 
+                            type="password"
+                            name="password"
+                            value={user.password}
+                            onChange={handleChange}
+                            required
+                            minLength={8}
+                            maxLength={30}
+                            placeholder="Password" 
+                            focusBorderColor="green.400" 
+                        />
+                    </InputGroup>
+                    
+                    <Link href="/forgot-password" color="gray.500" fontSize="md" textAlign="right">Forgot Password ?</Link>
+                    
+                    <Button type="submit" colorScheme="orange" width="full" size="lg">Login</Button>
+                    
+                    <Text fontSize="md" color="gray.500" textAlign="center">
+                    New user ? <Link onClick={navigateToSignup} color="green.500">SignUp</Link>
+                    </Text>
+                </Stack>
+            </form>
+            </Box>
+        </Center>
+        </Flex>
     );
 };
 

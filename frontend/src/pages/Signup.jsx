@@ -27,7 +27,7 @@ const Signup = () => {
     const registerUser = (e) => {
         e.preventDefault();
         if (user.password !== user.confirmPassword) {
-            toast.error("Passwords do not match!");
+            toast.error("Enter the same Password");
             return;
         }
         const toastId = toast.loading('Registering...');
@@ -57,75 +57,77 @@ const Signup = () => {
                 <Box p={10} borderWidth={1} borderRadius="lg" borderColor="green.400" boxShadow="md" width="sm">
                     <Heading size="lg" textAlign="center" color="green.400" mb={8}>SignUp</Heading>
                     
-                    <Stack spacing={5}>
-                        <InputGroup>
-                            <InputLeftElement pointerEvents="none">
-                                <EmailIcon color="gray.400" />
-                            </InputLeftElement>
-                            <Input 
-                                type="email"
-                                name="email"
-                                value={user.email}
-                                onChange={handleChange}
-                                required
-                                placeholder="Email" 
-                                focusBorderColor="green.400" 
-                            />
-                        </InputGroup>
+                    <form onSubmit={registerUser}>
+                        <Stack spacing={5}>
+                            <InputGroup>
+                                <InputLeftElement pointerEvents="none">
+                                    <EmailIcon color="gray.400" />
+                                </InputLeftElement>
+                                <Input 
+                                    type="email"
+                                    name="email"
+                                    value={user.email}
+                                    onChange={handleChange}
+                                    required
+                                    placeholder="Email" 
+                                    focusBorderColor="green.400" 
+                                />
+                            </InputGroup>
 
-                        <InputGroup>
-                            <InputLeftElement pointerEvents="none">
-                                <InfoIcon color="gray.400" />
-                            </InputLeftElement>
-                            <Input 
-                                type="text"
-                                name="name"
-                                value={user.name}
-                                onChange={handleChange}
-                                required
-                                placeholder="Name" 
-                                focusBorderColor="green.400" 
-                            />
-                        </InputGroup>
+                            <InputGroup>
+                                <InputLeftElement pointerEvents="none">
+                                    <InfoIcon color="gray.400" />
+                                </InputLeftElement>
+                                <Input 
+                                    type="text"
+                                    name="name"
+                                    value={user.name}
+                                    onChange={handleChange}
+                                    required
+                                    placeholder="Name" 
+                                    focusBorderColor="green.400" 
+                                />
+                            </InputGroup>
 
-                        <InputGroup>
-                            <InputLeftElement pointerEvents="none">
-                                <LockIcon color="gray.400" />
-                            </InputLeftElement>
-                            <Input 
-                                type="password"
-                                name="password"
-                                value={user.password}
-                                onChange={handleChange}
-                                required
-                                minLength={8}
-                                maxLength={30}
-                                placeholder="Password" 
-                                focusBorderColor="green.400" 
-                            />
-                        </InputGroup>
+                            <InputGroup>
+                                <InputLeftElement pointerEvents="none">
+                                    <LockIcon color="gray.400" />
+                                </InputLeftElement>
+                                <Input 
+                                    type="password"
+                                    name="password"
+                                    value={user.password}
+                                    onChange={handleChange}
+                                    required
+                                    minLength={8}
+                                    maxLength={30}
+                                    placeholder="Password" 
+                                    focusBorderColor="green.400" 
+                                />
+                            </InputGroup>
 
-                        <InputGroup>
-                            <InputLeftElement pointerEvents="none">
-                                <LockIcon color="gray.400" />
-                            </InputLeftElement>
-                            <Input 
-                                type="password" 
-                                name="confirmPassword"
-                                value={user.confirmPassword}
-                                onChange={handleChange}
-                                required
-                                placeholder="Confirm Password" 
-                                focusBorderColor="green.400" 
-                            />
-                        </InputGroup>
+                            <InputGroup>
+                                <InputLeftElement pointerEvents="none">
+                                    <LockIcon color="gray.400" />
+                                </InputLeftElement>
+                                <Input 
+                                    type="password" 
+                                    name="confirmPassword"
+                                    value={user.confirmPassword}
+                                    onChange={handleChange}
+                                    required
+                                    placeholder="Confirm Password" 
+                                    focusBorderColor="green.400" 
+                                />
+                            </InputGroup>
 
-                        <Button onClick={registerUser} colorScheme="orange" width="full" size="lg">SignUp</Button>
+                            <Button type="submit" colorScheme="orange" width="full" size="lg">SignUp</Button>
 
-                        <Text fontSize="md" color="gray.500" textAlign="center">
-                            Already a User? <Link onClick={() => navigate('/')} color="green.500">Login</Link>
-                        </Text>
-                    </Stack>
+                            <Text fontSize="md" color="gray.500" textAlign="center">
+                                Already a User? <Link onClick={() => navigate('/')} color="green.500">Login</Link>
+                            </Text>
+                        </Stack>
+                    </form>
                 </Box>
             </Box>
 

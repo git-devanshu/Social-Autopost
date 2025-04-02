@@ -125,6 +125,7 @@ export default function MainContent() {
                             <option value="image">IMAGE</option>
                             <option value="video">VIDEO</option>
                         </Select>
+                        {/* <Button colorScheme="red" onClick={()=>setMediaURL(null)}>{mediaType === "image" ? "Clear Image" : "Clear Video"}</Button> */}
                     </HStack>
                 </Box>
             </Box>
