@@ -3,21 +3,18 @@ const {History} = require('../models/historyModel');
 // function to add a record to history while post is successful
 const addRecordToHistory = async(userId, platform, accountName, caption, mediaType, mediaURL) =>{
     try{
-        if(!mediaURL || mediaURL === null){
-            mediaType = "None";
-            mediaURL = '';
-        }
         const record = new History({
             userId,
             platform,
             accountName,
             caption,
-            mediaType,
-            mediaURL
+            mediaType : (!mediaURL || mediaURL === null) ? "none" : mediaType,
+            mediaURL : (!mediaURL || mediaURL === null) ? "none" : mediaURL
         });
         await record.save();
     }
     catch(error){
+        console.log(error);
         throw new Error("Error adding record to History");
     }
 }

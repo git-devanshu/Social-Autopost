@@ -5,6 +5,7 @@ import Sidebar from "../components/sidebar";
 import { useNavigate } from 'react-router-dom';
 import {getBaseURL, formatDate} from '../utils/helperFunctions';
 import {toast} from 'react-hot-toast';
+import axios from 'axios';
 
 export default function History() {
     const navigate = useNavigate();
@@ -31,6 +32,7 @@ export default function History() {
         .then(res =>{
             if(res.status === 200){
                 setHistory(res.data);
+                console.log(res.data);
                 toast.success('User history loaded', {id : toastId});
             }
         })
@@ -40,8 +42,22 @@ export default function History() {
         });
     }, [refresh]);
 
-    const handleDelete = () => {
-        // setHistory(prevHistory => prevHistory.filter((_, i) => i !== index));
+    const handleDelete = (recordId) => {
+        const toastId = toast.loading('Removing record from history');
+        const token = localStorage.getItem('token');
+        axios.delete(getBaseURL() + `/history/remove/${recordId}`, {headers : {
+            'Authorization' : `Bearer ${token}`
+        }})
+        .then(res =>{
+            if(res.status === 200){
+                setRefresh(!refresh);
+                toast.success(res.data.message, {id : toastId});
+            }
+        })
+        .catch(err =>{
+            console.error(err);
+            toast.error(err.response.data.message, {id : toastId});
+        });
     };
 
     const handleSidebarClick = (option) => {
@@ -56,6 +72,7 @@ export default function History() {
     return (
         <HStack align="stretch" h="100vh" spacing={0}>
             <Sidebar activeOption={activeOption} handleSidebarClick={handleSidebarClick} />
+
             <Box flex={1} p={6} overflowY="auto">
                 <HStack justifyContent="space-between" mb={4}>
                     <Text fontSize="2xl" fontWeight="bold">Post History</Text>
@@ -71,6 +88,7 @@ export default function History() {
                         <Input type="date" value={dateFilter} onChange={(e) => setDateFilter(e.target.value)} />
                     </HStack>
                 </HStack>
+
                 <VStack spacing={4} align="stretch">
                     {filteredHistory?.length > 0 ? filteredHistory.reverse().map((item, index) => (
                         <VStack key={index} p={4} borderRadius="md" borderWidth={1} borderColor="gray.200" bg="gray.50" position="relative" >
@@ -79,7 +97,7 @@ export default function History() {
                                     <Icon as={platformIcons[item.platform].icon} boxSize={6} color={platformIcons[item.platform].color} />
                                     <Text fontSize="lg" fontWeight="medium">{item.platform.toUpperCase()}</Text>
                                 </HStack>
-                                <Button size="sm" colorScheme="red" onClick={() => handleDelete(index)}>
+                                <Button size="sm" colorScheme="red" onClick={() => handleDelete(item._id)}>
                                     <Icon as={FaTrash} />
                                 </Button>
                             </HStack>
@@ -91,14 +109,13 @@ export default function History() {
                                 </Text>
 
                                 {/* Media Preview (if mediaURL exists) */}
-                                {item.mediaURL && (
+                                {item.mediaURL !== 'none' && (
                                     <Box mt={2} w="100%" maxW="400px" borderRadius="md" overflow="hidden">
-                                        {item.mediaType === "image" ? (
+                                        {item.mediaType.toUpperCase() === "IMAGE" ? (
                                             <Image src={item.mediaURL} alt="Media preview" borderRadius="md" />
-                                        ) : item.mediaType === "video" ? (
+                                        ) : item.mediaType.toUpperCase() === "VIDEO" ? (
                                             <video controls width="100%">
                                                 <source src={item.mediaURL} type="video/mp4" />
-                                                Your browser does not support the video tag.
                                             </video>
                                         ) : null}
                                     </Box>

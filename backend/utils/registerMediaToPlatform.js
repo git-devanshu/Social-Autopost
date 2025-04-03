@@ -76,6 +76,9 @@ const registerMediaOnTwitter = async (imageURL, mediaType, tokenData) => {
         if(mediaType === 'video'){
             throw new Error("Video uploads not supported");
         }
+        if(!imageURL || imageURL === null){
+            throw new Error("Media URL is required");
+        }
 
         const response = await axios.get(imageURL, {
             responseType: 'arraybuffer',

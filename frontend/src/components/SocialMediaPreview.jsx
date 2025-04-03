@@ -47,6 +47,9 @@ export default function SocialMediaPreview({ caption, isVerified, mediaURL, medi
             console.log(err);
             setIsDisabled(false);
             toast.error(err.response.data.message, {id: toastId});
+            if(err.response.status === 500 && platform === "Twitter" && mediaURL){
+                toast.error("Maybe the image is unsupported, try uploading another");
+            }
         });
     }
 

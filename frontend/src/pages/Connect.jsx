@@ -1,5 +1,6 @@
-import { Box, Button, VStack, HStack, Text, Icon } from "@chakra-ui/react";
+import { Box, Button, VStack, HStack, Text, Icon, Input, InputGroup, InputLeftElement, Spacer } from "@chakra-ui/react";
 import { FaInstagram, FaFacebook, FaTwitter, FaLinkedin } from "react-icons/fa";
+import { InfoIcon, LockIcon } from "@chakra-ui/icons";
 import React, { useEffect, useState } from 'react'
 import {toast} from 'react-hot-toast';
 import {getBaseURL, decodeToken} from '../utils/helperFunctions';
@@ -22,6 +23,9 @@ export default function Connect() {
         ldnName : '',
         xUsername : ''
     });
+    const [fbAppId, setFbAppId] = useState('');
+    const [fbAppSecret, setFbAppSecret] = useState('');
+    const [areDetailsSaved, setAreDetailsSaved] = useState(false); //used to check whether facebook app credentials are saved
     const [activeOption, setActiveOption] = useState("Connect");
 
     const getQueryParams = (query) =>{
@@ -69,6 +73,7 @@ export default function Connect() {
         }
     }, [location, navigate]);
 
+    // for checking profile connections
     useEffect(()=>{
         const token = localStorage.getItem('token');
         const toastId = toast.loading('Checking Profile Connections...');
@@ -86,6 +91,9 @@ export default function Connect() {
             toast.error(err.response.data.message, {id : toastId});
         });
     }, [refresh]);
+
+    // for getting the fbAppId
+    useEffect(()=>{}, []);
 
     const handleSidebarClick = (option) => {
         setActiveOption(option);
@@ -125,7 +133,7 @@ export default function Connect() {
     };
     
 
-    const goToInstagramOAuth = () =>{}
+    const connectInstagram = () =>{}
 
 
     const goToFacebookOAuth = () =>{}
@@ -157,34 +165,6 @@ export default function Connect() {
             <Box flex={1} p={6} overflowY="auto">
                 <Text fontSize="2xl" fontWeight="bold" mb={4}>Connect Your Accounts</Text>
                 <VStack spacing={4} align="stretch">
-                    {/* for instagram */}
-                    <HStack justify="space-between" p={4} borderRadius="md" borderWidth={1} borderColor="gray.200" bg={profileConnection.instagram ? "green.100" : "gray.50"}>
-                        <HStack>
-                            <Icon as={FaInstagram} boxSize={6} color={"#E1306C"} />
-                            <Text fontSize="lg" fontWeight="medium">Instagram</Text>
-                            {profileConnection.instagram && <Text fontSize="sm" color="gray.600">(@{profileConnection.igUsername})</Text>}
-                        </HStack>
-                        {profileConnection.instagram ? (
-                            <Button colorScheme="red" onClick={() => removeConnection('instagram')}>Disconnect</Button>
-                        ) : (
-                            <Button colorScheme="green" onClick={goToInstagramOAuth}>Connect</Button>
-                        )}
-                    </HStack>
-
-                    {/* for facebook */}
-                    <HStack justify="space-between" p={4} borderRadius="md" borderWidth={1} borderColor="gray.200" bg={profileConnection.facebook ? "green.100" : "gray.50"}>
-                        <HStack>
-                            <Icon as={FaFacebook} boxSize={6} color={"#1877F2"} />
-                            <Text fontSize="lg" fontWeight="medium">Facebook</Text>
-                            {profileConnection.facebook && <Text fontSize="sm" color="gray.600">({profileConnection.fbName})</Text>}
-                        </HStack>
-                        {profileConnection.facebook ? (
-                            <Button colorScheme="red" onClick={() => removeConnection('facebook')}>Disconnect</Button>
-                        ) : (
-                            <Button colorScheme="green" onClick={goToFacebookOAuth}>Connect</Button>
-                        )}
-                    </HStack>
-
                     {/* for linkedin */}
                     <HStack justify="space-between" p={4} borderRadius="md" borderWidth={1} borderColor="gray.200" bg={profileConnection.linkedin ? "green.100" : "gray.50"}>
                         <HStack>
@@ -212,6 +192,84 @@ export default function Connect() {
                             <Button colorScheme="green" onClick={goToTwitterOAuth}>Connect</Button>
                         )}
                     </HStack>
+
+                    {/* for instagram */}
+                    <HStack justify="space-between" p={4} borderRadius="md" borderWidth={1} borderColor="gray.200" bg={profileConnection.instagram ? "green.100" : "gray.50"}>
+                        <HStack>
+                            <Icon as={FaInstagram} boxSize={6} color={"#E1306C"} />
+                            <Text fontSize="lg" fontWeight="medium">Instagram</Text>
+                            {profileConnection.instagram && <Text fontSize="sm" color="gray.600">(@{profileConnection.igUsername})</Text>}
+                        </HStack>
+                        {profileConnection.instagram ? (
+                            <Button colorScheme="red" onClick={() => removeConnection('instagram')}>Disconnect</Button>
+                        ) : (
+                            <Button colorScheme="green" onClick={connectInstagram}>Connect</Button>
+                        )}
+                    </HStack>
+
+                    {/* for facebook */}
+                    <HStack justify="space-between" p={4} borderRadius="md" borderWidth={1} borderColor="gray.200" bg={profileConnection.facebook ? "green.100" : "gray.50"}>
+                        <HStack>
+                            <Icon as={FaFacebook} boxSize={6} color={"#1877F2"} />
+                            <Text fontSize="lg" fontWeight="medium">Facebook</Text>
+                            {profileConnection.facebook && <Text fontSize="sm" color="gray.600">({profileConnection.fbName})</Text>}
+                        </HStack>
+                        {profileConnection.facebook ? (
+                            <Button colorScheme="red" onClick={() => removeConnection('facebook')}>Disconnect</Button>
+                        ) : (
+                            <Button colorScheme="green" onClick={goToFacebookOAuth}>Connect</Button>
+                        )}
+                    </HStack>
+
+                    {/* Facebook app credentials */}
+                    <Text fontSize="xl" fontWeight="bold" mt={2}>Your Facebook App Credentials</Text>
+                    <VStack p={4} borderRadius="md" borderWidth={1} borderColor="gray.200" bg="gray.50" >
+                        <Text alignSelf="start">This is required to connect your Facebook Page and Instagram account linked to it.</Text>
+                        <HStack w="full">
+                            <InputGroup>
+                                <InputLeftElement pointerEvents="none">
+                                    <InfoIcon color="gray.400" />
+                                </InputLeftElement>
+                                <Input 
+                                    type="text"
+                                    name="fbAppId"
+                                    value={fbAppId}
+                                    onChange={(e)=> setFbAppId(e.target.value)}
+                                    required
+                                    placeholder="Facebook App ID" 
+                                    focusBorderColor="green.400"
+                                    isReadOnly={areDetailsSaved}
+                                />
+                            </InputGroup>
+
+                            <InputGroup>
+                                <InputLeftElement pointerEvents="none">
+                                    <LockIcon color="gray.400" />
+                                </InputLeftElement>
+                                <Input 
+                                    type="password"
+                                    name="fbAppSecret"
+                                    value={fbAppSecret}
+                                    onChange={(e)=> setFbAppSecret(e.target.value)}
+                                    required
+                                    placeholder="Facebook App Secret" 
+                                    focusBorderColor="green.400"
+                                    isReadOnly={areDetailsSaved}
+                                />
+                            </InputGroup>
+
+                            <Spacer/>
+
+                            {areDetailsSaved ?
+                                <Button colorScheme="red" width={'140px'}>
+                                    Remove
+                                </Button> :
+                                <Button colorScheme="green" width={'140px'}>
+                                    Save
+                                </Button>                                
+                            }
+                        </HStack>
+                    </VStack>
                 </VStack>
             </Box>
         </HStack>
