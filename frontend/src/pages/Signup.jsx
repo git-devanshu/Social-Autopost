@@ -71,6 +71,7 @@ const Signup = () => {
                                     required
                                     placeholder="Email" 
                                     focusBorderColor="green.400" 
+                                    onKeyDown={(e) => e.key === "Enter" && registerUser(e)}
                                 />
                             </InputGroup>
 
@@ -86,6 +87,7 @@ const Signup = () => {
                                     required
                                     placeholder="Name" 
                                     focusBorderColor="green.400" 
+                                    onKeyDown={(e) => e.key === "Enter" && registerUser(e)}
                                 />
                             </InputGroup>
 
@@ -103,6 +105,7 @@ const Signup = () => {
                                     maxLength={30}
                                     placeholder="Password" 
                                     focusBorderColor="green.400" 
+                                    onKeyDown={(e) => e.key === "Enter" && registerUser(e)}
                                 />
                             </InputGroup>
 
@@ -118,6 +121,7 @@ const Signup = () => {
                                     required
                                     placeholder="Confirm Password" 
                                     focusBorderColor="green.400" 
+                                    onKeyDown={(e) => e.key === "Enter" && registerUser(e)}
                                 />
                             </InputGroup>
 

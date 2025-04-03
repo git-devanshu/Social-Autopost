@@ -143,6 +143,7 @@ const ForgotPassword = () => {
                                         value={email}
                                         onChange={(e) => setEmail(e.target.value)}
                                         focusBorderColor="green.400"
+                                        onKeyDown={(e) => e.key === "Enter" && verifyUser(e)}
                                     />
                                     <Button 
                                         onClick={verifyUser}
@@ -163,7 +164,7 @@ const ForgotPassword = () => {
                                             <PinInputField />
                                             <PinInputField />
                                             <PinInputField />
-                                            <PinInputField />
+                                            <PinInputField onKeyDown={(e) => e.key === "Enter" && verifyCode(e)} />
                                         </PinInput>
                                     </HStack>
                                     <Button 
@@ -185,6 +186,7 @@ const ForgotPassword = () => {
                                         value={newPassword}
                                         onChange={(e) => setNewPassword(e.target.value)}
                                         focusBorderColor="green.400"
+                                        onKeyDown={(e) => e.key === "Enter" && resetPassword(e)}
                                     />
                                     <Input 
                                         type="password"
@@ -193,6 +195,7 @@ const ForgotPassword = () => {
                                         value={confirmPassword}
                                         onChange={(e) => setConfirmPassword(e.target.value)}
                                         focusBorderColor="green.400"
+                                        onKeyDown={(e) => e.key === "Enter" && resetPassword(e)}
                                     />
                                     <Button 
                                         onClick={resetPassword}

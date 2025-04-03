@@ -66,16 +66,17 @@ const Login = () => {
                             <EmailIcon color="gray.400" />
                         </InputLeftElement>
                         <Input 
-                            type="text"
+                            type="email"
                             name="email"
                             value={user.email}
                             onChange={handleChange}
                             required 
                             placeholder="Email" 
-                            focusBorderColor="green.400" 
+                            focusBorderColor="green.400"
+                            onKeyDown={(e) => e.key === "Enter" && loginUser(e)} // Handle Enter key
                         />
                     </InputGroup>
-                    
+
                     <InputGroup>
                         <InputLeftElement pointerEvents="none">
                             <LockIcon color="gray.400" />
@@ -89,19 +90,23 @@ const Login = () => {
                             minLength={8}
                             maxLength={30}
                             placeholder="Password" 
-                            focusBorderColor="green.400" 
+                            focusBorderColor="green.400"
+                            onKeyDown={(e) => e.key === "Enter" && loginUser(e)} // Handle Enter key
                         />
                     </InputGroup>
-                    
-                    <Link href="/forgot-password" color="gray.500" fontSize="md" textAlign="right">Forgot Password ?</Link>
-                    
+
+                    <Link href="/forgot-password" color="gray.500" fontSize="md" textAlign="right">
+                        Forgot Password ?
+                    </Link>
+
                     <Button type="submit" colorScheme="orange" width="full" size="lg">Login</Button>
-                    
+
                     <Text fontSize="md" color="gray.500" textAlign="center">
-                    New user ? <Link onClick={navigateToSignup} color="green.500">SignUp</Link>
+                        New user ? <Link onClick={navigateToSignup} color="green.500">SignUp</Link>
                     </Text>
                 </Stack>
             </form>
+
             </Box>
         </Center>
         </Flex>
