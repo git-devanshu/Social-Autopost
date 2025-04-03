@@ -10,6 +10,7 @@ import ForgotPassword from './pages/ForgotPassword';
 import NotFound from './pages/NotFound';
 import AutoPost from './pages/Dashboard';
 import Connect from './pages/Connect';
+import History from './components/History';
 
 export default function App() {
     return (
@@ -25,7 +26,7 @@ export default function App() {
                     <Route path='/dashboard' element={<ProtectedDashboard />} />
                     <Route path='/connect-profiles' element={<ProtectedConnectProfiles />} />
                     {/* <Route path='/schedule-posts' element={< />} /> */}
-                    {/* <Route path='/history' element={< />} /> */}
+                    <Route path='/history' element={<History />} />
                     {/* <Route path='/profile' element={< />} /> */}
                     {/* <Route path='/' element={< />} /> */}
         
