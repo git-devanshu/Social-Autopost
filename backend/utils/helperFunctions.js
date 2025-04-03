@@ -1,4 +1,5 @@
 const nodemailer = require('nodemailer');
+const crypto = require("crypto");
 require('dotenv').config();
 
 const transporter = nodemailer.createTransport({
@@ -104,9 +105,35 @@ function getCurrentDate(type){
     }
 }
 
+const ALGORITHM = "aes-256-cbc";
+const IV = crypto.randomBytes(16);
+
+//return encrypted data using AES
+function encryptData(data) {
+    const cipher = crypto.createCipheriv(ALGORITHM, Buffer.from(process.env.AES_SECRET, "utf-8"), IV);
+    let encrypted = cipher.update(data, "utf8", "hex");
+    encrypted += cipher.final("hex");
+    return IV.toString("hex") + ":" + encrypted;
+}
+
+//return decrypted data using AES
+function decryptData(encryptedData) {
+    const parts = encryptedData.split(":");
+    const iv = Buffer.from(parts.shift(), "hex");
+    const encryptedText = parts.join(":");
+
+    const decipher = crypto.createDecipheriv(ALGORITHM, Buffer.from(process.env.AES_SECRET, "utf-8"), iv);
+    let decrypted = decipher.update(encryptedText, "hex", "utf8");
+    decrypted += decipher.final("utf8");
+    return decrypted;
+}
+
+
 module.exports = {
     sendSignupMail,
     sendVFCodeMail,
     generateVerificationCode,
-    getCurrentDate
+    getCurrentDate,
+    encryptData,
+    decryptData
 }

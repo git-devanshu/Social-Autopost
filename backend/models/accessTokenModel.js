@@ -8,8 +8,8 @@ const tokenSchema = new mongoose.Schema({
     issuedAt : {type : Date, required : true},
     validityDuration : {type : Number, required : true}, //in seconds
     expiresAt : {type : Date, required : true}, //calculated at the time of storing token
-    tokenSecret : {type : String}, //for twitter
-    name : {type : String, default : ''}, //for twitter
+    tokenSecret : {type : String}, //access token secret (required for twitter)
+    name : {type : String, default : ''}
 });
 
 const AccessToken = mongoose.model('accesstokens', tokenSchema, 'accesstokens');
@@ -23,5 +23,11 @@ profileId
 - twitter : user_id field returned in profile data
 - facebook : pageId of the facebook page
 - instagram : igUserId returned in profile data
+
+name
+- linkedIn : profile name
+- twitter : profile username
+- facebook : profile name
+- instagram : profile username
 
 */

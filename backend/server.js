@@ -4,6 +4,7 @@ const {connectToDB} = require('./configs/dbConfig');
 const {authRouter} = require('./routes/authRoutes');
 const {postRouter} = require('./routes/postRoutes');
 const {oAuthRouter} = require('./routes/oAuthRoutes');
+const {historyRouter} = require('./routes/historyRoutes');
 
 require('dotenv').config();
 
@@ -21,6 +22,7 @@ connectToDB();
 app.use('/auth', authRouter);
 app.use('/upload', postRouter);
 app.use('/oauth', oAuthRouter);
+app.use('/history', historyRouter);
 
 // run the server
 app.listen(process.env.PORT, () =>{

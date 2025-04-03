@@ -1,5 +1,6 @@
 const {AccessToken} = require("../models/accessTokenModel");
 const {Users} = require('../models/userModel');
+const {encryptData, decryptData} = require('../utils/helperFunctions');
 
 const axios = require("axios");
 const querystring = require("querystring");
@@ -264,19 +265,67 @@ const getTwitterOAuthToken = async (req, res) => {
 };
 
 
-// @desc   - Handle Instagram OAuth callback and store the access token in db
-// @route  - GET /oauth/instagram/callback
-// @access - Callback & Public
-const handleInstagramCallback = async(req, res) =>{
+// @desc   - Add the facebook developer APP ID and SECRET into the user db in an encrypted form
+// @route  - POST /oauth/facebook/app/add
+// @access - Private
+const addFBAppDetails = async(req, res) =>{
     try{
+        const {fbAppId, fbAppSecret} = req.body;
+        const encryptedAppId = encryptData(fbAppId);
+        const encryptedAppSecret = encryptData(fbAppSecret);
 
-        const successClientURL = `${process.env.CLIENT_URL}?success=true`
-        res.redirect(successClientURL);
+        const user = await Users.findByIdAndUpdate(req.id, {
+            fbAppId : encryptedAppId, 
+            fbAppSecret : encryptedAppSecret
+        }, {new : true});
+
+        if(!user){
+            return res.status(404).json({ message : "User not found" });
+        }
+        res.status(200).json({ message : "Facebook App credentials added successfully" });
     }
     catch(error){
-        console.error("Error during Instagram OAuth:", error.response?.data || error);
-        const errorClientURL = `${process.env.CLIENT_URL}?error=oauth_failed`
-        res.redirect(errorClientURL);
+        res.status(500).json({ message : "Internal Server Error" });
+    }
+}
+
+
+// @desc   - Get the facebook developer APP ID from the user db (dont send app secret)
+// @route  - GET /oauth/facebook/app
+// @access - Private
+const getFBAppID = async(req, res) =>{
+    try{
+        const user = await Users.findById(req.id);
+        if(!user){
+            return res.status(400).json({ message : "User not found" });
+        }
+
+        if(user.fbAppId === ""){
+            return res.status(200).json({fbAppId : ""});
+        }
+
+        const fbAppId = decryptData(user.fbAppId);
+        res.status(200).json({fbAppId});
+    }
+    catch(error){
+        res.status(500).json({ message : "Internal Server Error" });
+    }
+}
+
+
+// @desc   - Remove the facebook developer APP ID and SECRET from the user db
+// @route  - DELETE /oauth/facebook/app/remove
+// @access - Private
+const removeFBAppDetails = async(req, res) =>{
+    try{
+        const user = await Users.findByIdAndUpdate(req.id, {fbAppId : '', fbAppSecret : ''}, {new : true});
+        if(!user){
+            return res.status(404).json({ message : "User not found" });
+        }
+        res.status(200).json({ message : "Facebook App credentials removed successfully" });
+    }
+    catch(error){
+        res.status(500).json({ message : "Internal Server Error" });
     }
 }
 
@@ -286,7 +335,7 @@ const handleInstagramCallback = async(req, res) =>{
 // @access - Callback & Public
 const handleFacebookCallback = async(req, res) =>{
     try{
-
+        
         const successClientURL = `${process.env.CLIENT_URL}?success=true`
         res.redirect(successClientURL);
     }
@@ -294,6 +343,19 @@ const handleFacebookCallback = async(req, res) =>{
         console.error("Error during Facebook OAuth:", error.response?.data || error);
         const errorClientURL = `${process.env.CLIENT_URL}?error=oauth_failed`
         res.redirect(errorClientURL);
+    }
+}
+
+
+// @desc   - Connect the linked Instagram account from the already connected FB Page
+// @route  - GET /oauth/instagram/connect
+// @access - Private
+const connectInstagramFromFB = async(req, res) =>{
+    try{
+
+    }
+    catch(error){
+        res.status(500).json({ message : "Internal Server Error" });
     }
 }
 
@@ -346,7 +408,6 @@ const saveAccessToken = async(req, res) =>{
     }
 }
 
-
 /*-------------------------------------------------------------*/
 
 
@@ -357,7 +418,12 @@ module.exports = {
     handleTwitterCallback,
     getTwitterOAuthToken,
     requestTwitterOAuthToken,
-    handleInstagramCallback,
+
+    addFBAppDetails,
+    getFBAppID,
+    removeFBAppDetails,
     handleFacebookCallback,
+    connectInstagramFromFB,
+
     saveAccessToken
 };

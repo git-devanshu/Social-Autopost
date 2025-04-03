@@ -1,21 +1,25 @@
 const express = require('express');
 const oAuthRouter = express.Router();
-const {handleLinkedInCallback, getProfileConnectionData, handleFacebookCallback, handleInstagramCallback, handleTwitterCallback, removeAccessToken, getTwitterOAuthToken, requestTwitterOAuthToken, saveAccessToken} = require('../controllers/oAuthController');
+const {handleLinkedInCallback, getProfileConnectionData, handleFacebookCallback, handleTwitterCallback, removeAccessToken, getTwitterOAuthToken, requestTwitterOAuthToken, saveAccessToken, addFBAppDetails, getFBAppID, removeFBAppDetails, connectInstagramFromFB} = require('../controllers/oAuthController');
 const {checkAuthorization} = require('../middlewares/checkAuth');
 
 // endpoint prefix : /oauth
 
 oAuthRouter.get('/profile-connection', checkAuthorization, getProfileConnectionData);
+oAuthRouter.delete('/logout/:platform', checkAuthorization, removeAccessToken);
 
 oAuthRouter.get('/linkedin/callback', handleLinkedInCallback);
-oAuthRouter.get('/twitter/callback', handleTwitterCallback);
-oAuthRouter.get('/instagram/callback', handleInstagramCallback);
-oAuthRouter.get('/facebook/callback', handleFacebookCallback);
 
 oAuthRouter.post('/twitter/request-token', checkAuthorization, requestTwitterOAuthToken);
+oAuthRouter.get('/twitter/callback', handleTwitterCallback);
 oAuthRouter.post('/twitter/get-token', checkAuthorization, getTwitterOAuthToken);
 
-oAuthRouter.delete('/logout/:platform', checkAuthorization, removeAccessToken);
+oAuthRouter.post('/facebook/app/add', checkAuthorization, addFBAppDetails);
+oAuthRouter.get('/facebook/app', checkAuthorization, getFBAppID);
+oAuthRouter.delete('/facebook/app/remove', checkAuthorization, removeFBAppDetails);
+
+oAuthRouter.get('/facebook/callback', handleFacebookCallback);
+oAuthRouter.get('/instagram/connect', checkAuthorization, connectInstagramFromFB);
 
 /*-------------------------------------------------------------*/
 
