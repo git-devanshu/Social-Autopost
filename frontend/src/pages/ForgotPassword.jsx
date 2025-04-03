@@ -72,6 +72,10 @@ const ForgotPassword = () => {
             toast.error('Please enter the verification code');
             return;
         }
+        if(vfcode.length < 6){
+            toast.error('Enter all 6 digits');
+            return;
+        }
         const toastId = toast.loading('Checking Verification Code...');
         axios.post(getBaseURL() + '/auth/verify-vfcode', {vfcode, email})
         .then(res =>{
@@ -90,8 +94,12 @@ const ForgotPassword = () => {
 
     const resetPassword = (e) =>{
         e.preventDefault();
-        if(newPassword === "" || confirmPassword === ""){
+        if(newPassword === ""){
             toast.error('Please enter the new password');
+            return;
+        }
+        else if(confirmPassword === ""){
+            toast.error('Please confirm the new password');
             return;
         }
         else if(newPassword !== confirmPassword){

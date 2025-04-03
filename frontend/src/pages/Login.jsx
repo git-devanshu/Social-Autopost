@@ -53,7 +53,7 @@ const Login = () => {
             One Dashboard, Infinite Possibilities. Sign in to Take Control!
             </Text>
         </Box>
-      
+        
         {/* Right Section */}
         <Center flex={1} bg="white">
             <Box p={10} borderWidth={1} borderRadius="lg" borderColor="green.400" boxShadow="md" width="sm">
@@ -73,7 +73,7 @@ const Login = () => {
                             required 
                             placeholder="Email" 
                             focusBorderColor="green.400"
-                            onKeyDown={(e) => e.key === "Enter" && loginUser(e)} // Handle Enter key
+                            onKeyDown={(e) => e.key === "Enter" && e.target.form.reportValidity() && loginUser(e)}
                         />
                     </InputGroup>
 
@@ -91,7 +91,7 @@ const Login = () => {
                             maxLength={30}
                             placeholder="Password" 
                             focusBorderColor="green.400"
-                            onKeyDown={(e) => e.key === "Enter" && loginUser(e)} // Handle Enter key
+                            onKeyDown={(e) => e.key === "Enter" && e.target.form.reportValidity() && loginUser(e)}
                         />
                     </InputGroup>
 
