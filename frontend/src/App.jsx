@@ -10,7 +10,7 @@ import ForgotPassword from './pages/ForgotPassword';
 import NotFound from './pages/NotFound';
 import AutoPost from './pages/Dashboard';
 import Connect from './pages/Connect';
-import History from './components/History';
+import History from './pages/History';
 
 export default function App() {
     return (

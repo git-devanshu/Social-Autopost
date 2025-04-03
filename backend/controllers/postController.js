@@ -1,5 +1,6 @@
 const {AccessToken} = require('../models/accessTokenModel');
 const {registerMediaOnLinkedIn, registerMediaOnTwitter} = require('../utils/registerMediaToPlatform');
+const {addRecordToHistory} = require('../controllers/historyController');
 
 const axios = require("axios");
 const querystring = require("querystring");
@@ -44,6 +45,7 @@ const postToFacebook = async (req, res) => {
             }
         );
 
+        await addRecordToHistory(userId, 'facebook', tokenData.name, caption, mediaType, mediaURL);
         res.status(200).json({message: "Facebook post created successfully", postId: postResponse.data.id});
     }
     catch(error){
@@ -79,11 +81,8 @@ const postToInstagram = async (req, res) => {
             }
         );
 
-        res.status(200).json({
-            message: "Instagram post published successfully",
-            mediaId: publishResponse.data.id
-        });
-
+        await addRecordToHistory(userId, 'instagram', tokenData.name, caption, mediaType, mediaURL);
+        res.status(200).json({message: "Posted on Instagram successfully", mediaId: publishResponse.data.id});
     }
     catch(error){
         console.error("Instagram posting error:", error.response?.data || error);
@@ -148,7 +147,9 @@ const postToLinkedIn = async (req, res) => {
                 }
             }
         );
-        res.status(200).json({ message: "Post uploaded successfully", response: response.data });
+
+        await addRecordToHistory(userId, 'linkedin', tokenData.name, caption, mediaType, mediaURL);
+        res.status(200).json({ message: "Posted to LinkedIn successfully", response: response.data });
     } 
     catch(error){
         console.error("Error posting to LinkedIn:", error.response?.data || error);
@@ -192,6 +193,7 @@ const postToTwitter = async (req, res) => {
         };
         const response = await twitterClient.v2.tweet(tweetPayload);
 
+        await addRecordToHistory(userId, 'twitter', tokenData.name, caption, mediaType, mediaURL);
         res.status(200).json({ message: "Tweet posted successfully", tweet: response.data });
     } 
     catch(error){

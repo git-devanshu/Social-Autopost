@@ -1,41 +1,51 @@
 import { Box, VStack, HStack, Text, Icon, Select, Input, Button, Image } from "@chakra-ui/react";
 import { FaInstagram, FaFacebook, FaTwitter, FaLinkedin, FaTrash } from "react-icons/fa";
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Sidebar from "../components/sidebar";
 import { useNavigate } from 'react-router-dom';
-import dummyHistory from "../utils/dummyHistory";
+import {getBaseURL, formatDate} from '../utils/helperFunctions';
+import {toast} from 'react-hot-toast';
 
 export default function History() {
     const navigate = useNavigate();
-    const [history, setHistory] = useState(dummyHistory);
+
+    const [history, setHistory] = useState([]);
     const [activeOption, setActiveOption] = useState("History");
     const [platformFilter, setPlatformFilter] = useState("all");
     const [dateFilter, setDateFilter] = useState("");
-
-    const handleSidebarClick = (option) => {
-        setActiveOption(option);
-    };
-
-    const handleDelete = (index) => {
-        setHistory(prevHistory => prevHistory.filter((_, i) => i !== index));
-    };
-
-    // Format date as "DD-MMM-YYYY"
-    const formatDate = (dateString) => {
-        if (!dateString) return "";
-        const date = new Date(dateString);
-        return date.toLocaleDateString("en-GB", {
-            day: "2-digit",
-            month: "short",
-            year: "numeric"
-        }).replace(",", ""); // Removes comma from month format
-    };
+    const [refresh, setRefresh] = useState(false);
 
     const platformIcons = {
         instagram: { icon: FaInstagram, color: "#E1306C" },
         facebook: { icon: FaFacebook, color: "#1877F2" },
         twitter: { icon: FaTwitter, color: "#1DA1F2" },
         linkedin: { icon: FaLinkedin, color: "#0A66C2" }
+    };
+
+    useEffect(()=>{
+        const toastId = toast.loading('Loading user post history');
+        const token = localStorage.getItem('token');
+        axios.get(getBaseURL() + '/history/get', {headers : {
+            'Authorization' : `Bearer ${token}`
+        }})
+        .then(res =>{
+            if(res.status === 200){
+                setHistory(res.data);
+                toast.success('User history loaded', {id : toastId});
+            }
+        })
+        .catch(err =>{
+            console.error(err);
+            toast.error(err.response.data.message || 'Failed to load user history', {id : toastId});
+        });
+    }, [refresh]);
+
+    const handleDelete = () => {
+        // setHistory(prevHistory => prevHistory.filter((_, i) => i !== index));
+    };
+
+    const handleSidebarClick = (option) => {
+        setActiveOption(option);
     };
 
     const filteredHistory = history.filter(item => 
@@ -62,7 +72,7 @@ export default function History() {
                     </HStack>
                 </HStack>
                 <VStack spacing={4} align="stretch">
-                    {filteredHistory.length > 0 ? filteredHistory.reverse().map((item, index) => (
+                    {filteredHistory?.length > 0 ? filteredHistory.reverse().map((item, index) => (
                         <VStack key={index} p={4} borderRadius="md" borderWidth={1} borderColor="gray.200" bg="gray.50" position="relative" >
                             <HStack justifyContent="space-between" w="100%">
                                 <HStack>
