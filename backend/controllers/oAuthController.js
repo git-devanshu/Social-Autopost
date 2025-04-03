@@ -143,8 +143,7 @@ const requestTwitterOAuthToken = async (req, res) => {
         };
 
         const authHeader = oauth.toHeader(oauth.authorize(requestData));
-        const tokenResponse = await axios.post("https://api.twitter.com/oauth/request_token", {}, { headers: 
-            {
+        const tokenResponse = await axios.post("https://api.twitter.com/oauth/request_token", {}, { headers: {
                 Authorization: authHeader.Authorization,
             },
         });
@@ -226,14 +225,11 @@ const getTwitterOAuthToken = async (req, res) => {
             secret: userData.xOAuthTokenSecret
         }));
 
-        const tokenResponse = await axios.post("https://api.twitter.com/oauth/access_token", new URLSearchParams({ oauth_token, oauth_verifier }).toString(),
-            { 
-                headers: { 
-                    Authorization: authHeader.Authorization,
-                    "Content-Type": "application/x-www-form-urlencoded",
-                },
-            }
-        );
+        const tokenResponse = await axios.post("https://api.twitter.com/oauth/access_token", new URLSearchParams({ oauth_token, oauth_verifier }).toString(), {headers: { 
+                Authorization: authHeader.Authorization,
+                "Content-Type": "application/x-www-form-urlencoded",
+            },
+        });
 
         const params = new URLSearchParams(tokenResponse.data);
         const accessToken = params.get("oauth_token");
@@ -297,9 +293,8 @@ const getFBAppID = async(req, res) =>{
     try{
         const user = await Users.findById(req.id);
         if(!user){
-            return res.status(400).json({ message : "User not found" });
+            return res.status(404).json({ message : "User not found" });
         }
-
         if(user.fbAppId === ""){
             return res.status(200).json({fbAppId : ""});
         }
@@ -333,9 +328,63 @@ const removeFBAppDetails = async(req, res) =>{
 // @desc   - Handle Facebook OAuth callback and store the access token in db
 // @route  - GET /oauth/facebook/callback
 // @access - Callback & Public
-const handleFacebookCallback = async(req, res) =>{
+const handleFacebookCallback = async(req, res) => {
     try{
-        
+        const {code, userId} = req.query;
+        if(!code || !userId){
+            return res.status(400).json({ message: "Authorization code missing" });
+        }
+
+        const savedUser = await Users.findById(userId);
+        const fbAppId = decryptData(savedUser.fbAppId);
+        const fbAppSecret = decryptData(savedUser.fbAppSecret);
+
+        const REDIRECT_URI = `${req.protocol}://${req.get('host')}/oauth/facebook/callback?userId=${userId}`;
+        const tokenResponse = await axios.get(`https://graph.facebook.com/v19.0/oauth/access_token`, {
+            params: {
+                client_id: fbAppId,
+                client_secret: fbAppSecret,
+                redirect_uri: REDIRECT_URI,
+                code: code
+            }
+        });
+
+        const longLivedTokenResponse = await axios.get(`https://graph.facebook.com/v19.0/oauth/access_token`, {
+            params: {
+                grant_type: 'fb_exchange_token',
+                client_id: fbAppId,
+                client_secret: fbAppSecret,
+                fb_exchange_token: tokenResponse.data.access_token
+            }
+        });
+
+        const longLivedToken = longLivedTokenResponse.data.access_token;
+
+        const pagesResponse = await axios.get(`https://graph.facebook.com/v19.0/me/accounts`, {
+            params: {
+                access_token: longLivedToken
+            }
+        });
+        if(!pagesResponse.data.data || pagesResponse.data.data.length === 0){
+            return res.status(400).json({ message: "No Facebook Page found for this account" });
+        }
+
+        const {id: pageId, name: pageName} = pagesResponse.data.data[0];
+        const pageAccessToken = pagesResponse.data.data[0].access_token;
+
+        await AccessToken.findOneAndUpdate({userId, platform: "facebook"}, {
+            userId,
+            token: pageAccessToken,
+            profileId: pageId,
+            platform: "facebook",
+            validityDuration : 5184000,
+            expiresAt: new Date(Date.now() + (5184000000)),
+            issuedAt: new Date(),
+            name : pageName
+        }, {
+            upsert: true, new: true
+        });
+
         const successClientURL = `${process.env.CLIENT_URL}?success=true`
         res.redirect(successClientURL);
     }
@@ -344,7 +393,7 @@ const handleFacebookCallback = async(req, res) =>{
         const errorClientURL = `${process.env.CLIENT_URL}?error=oauth_failed`
         res.redirect(errorClientURL);
     }
-}
+};
 
 
 // @desc   - Connect the linked Instagram account from the already connected FB Page
@@ -352,10 +401,52 @@ const handleFacebookCallback = async(req, res) =>{
 // @access - Private
 const connectInstagramFromFB = async(req, res) =>{
     try{
+        const userId = req.id;
+        const fbToken = await AccessToken.findOne({userId, platform : "facebook"});
+        if(!fbToken){
+            return res.status(400).json({ message: "You need to connect your Facebook Page first"});
+        }
 
+        const igAccountResponse = await axios.get(`https://graph.facebook.com/v19.0/${fbToken.profileId}`, {
+            params: {
+                fields: 'instagram_business_account',
+                access_token: fbToken.token
+            }
+        });
+
+        if(!igAccountResponse.data.instagram_business_account?.id){
+            return res.status(400).json({ message: "Your Instagram Business Account is not linked to this Facebook Page" });
+        }
+        const igUserId = igAccountResponse.data.instagram_business_account.id;
+
+        const igUsernameResponse = await axios.get(`https://graph.facebook.com/v19.0/${igUserId}`, {
+            params: {
+                fields: 'username',
+                access_token: fbToken.token
+            }
+        });
+        const igUsername = igUsernameResponse.data.username;
+
+        const today = new Date();
+        const validity = (fbToken.expiresAt - today)/1000;
+
+        await AccessToken.findOneAndUpdate({userId, platform: "instagram"}, {
+            userId,
+            token: fbToken.token,
+            profileId: igUserId,
+            platform: "instagram",
+            validityDuration : validity,
+            expiresAt: fbToken.expiresAt,
+            issuedAt: new Date(),
+            name : igUsername
+        }, {
+            upsert: true, new: true
+        });
+
+        res.status(200).json({ message : "Profile Connected Successfully" })
     }
     catch(error){
-        res.status(500).json({ message : "Internal Server Error" });
+        res.status(500).json({ message : "Profile Authentication Failed" });
     }
 }
 

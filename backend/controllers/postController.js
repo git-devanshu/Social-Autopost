@@ -3,9 +3,6 @@ const {registerMediaOnLinkedIn, registerMediaOnTwitter} = require('../utils/regi
 const {addRecordToHistory} = require('../controllers/historyController');
 
 const axios = require("axios");
-const querystring = require("querystring");
-const OAuth = require("oauth-1.0a");
-const crypto = require("crypto");
 const {TwitterApi} = require('twitter-api-v2');
 
 require('dotenv').config();
@@ -24,29 +21,30 @@ const postToFacebook = async (req, res) => {
             return res.status(401).json({ message: "Your Facebook profile is not connected" });
         }
 
-        let mediaPayload = {};
-        
-        if(mediaURL){
-            const mediaResponse = await axios.post(`https://graph.facebook.com/v19.0/${tokenData.profileId}/photos`, {
-                    url: mediaURL,
-                    published: false,
-                    access_token: tokenData.token
-                }
-            );
-            mediaPayload = {
-                attached_media: [{ media_fbid: mediaResponse.data.id }]
-            };
+        if(!mediaURL){
+            await axios.post(`https://graph.facebook.com/v19.0/${tokenData.profileId}/feed`, {
+                message: caption,
+                access_token: tokenData.token
+            });
+        }
+        else if(mediaType === 'image'){
+            await axios.post(`https://graph.facebook.com/v19.0/${tokenData.profileId}/photos`, {
+                url: mediaURL,
+                caption: caption,
+                published: true,
+                access_token: tokenData.token
+            });
+        }
+        else if(mediaType === 'video'){
+            await axios.post(`https://graph.facebook.com/v19.0/${tokenData.profileId}/videos`, {
+                file_url: mediaURL,
+                description: caption,
+                access_token: tokenData.token
+            });
         }
 
-        const postResponse = await axios.post(`https://graph.facebook.com/v19.0/${tokenData.profileId}/feed`, {
-                message: caption,
-                ...mediaPayload,
-                access_token: tokenData.token
-            }
-        );
-
         await addRecordToHistory(userId, 'facebook', tokenData.name, caption, mediaType, mediaURL);
-        res.status(200).json({message: "Facebook post created successfully", postId: postResponse.data.id});
+        res.status(200).json({ message: "Facebook post created successfully" });
     }
     catch(error){
         console.error("Facebook posting error:", error.response?.data || error);
@@ -62,27 +60,32 @@ const postToInstagram = async (req, res) => {
     try{
         const {caption, mediaURL, mediaType} = req.body;
         const userId = req.id;
-        const tokenData = await AccessToken.findOne({ userId, platform: "instagram" });
+        
+        if(mediaType === "video"){
+            return res.status(400).json({ message : "Video Posts are not supported for Instagram" });
+        }
+        if(!mediaURL || mediaURL === null){
+            return res.status(400).json({ message : "Image is required to post on Instagram" });
+        }
 
+        const tokenData = await AccessToken.findOne({ userId, platform: "instagram" });
         if(!tokenData || !tokenData.profileId || Date.now() >= new Date(tokenData.expiresAt).getTime()){
             return res.status(401).json({ message: "Your Instagram profile is not connected" });
         }
 
-        const mediaResponse = await axios.post(`https://graph.facebook.com/v19.0/${tokenData.profileId}/media`, {
-                image_url: mediaURL,
-                caption: caption,
-                access_token: tokenData.token
-            }
-        );
+        let mediaResponse = await axios.post(`https://graph.facebook.com/v19.0/${tokenData.profileId}/media`, {
+            image_url: mediaURL,
+            caption: caption,
+            access_token: tokenData.token
+        });
 
-        const publishResponse = await axios.post(`https://graph.facebook.com/v19.0/${tokenData.profileId}/media_publish`, {
-                creation_id: mediaResponse.data.id,
-                access_token: tokenData.token
-            }
-        );
+        await axios.post(`https://graph.facebook.com/v19.0/${tokenData.profileId}/media_publish`, {
+            creation_id: mediaResponse.data.id,
+            access_token: tokenData.token
+        });
 
         await addRecordToHistory(userId, 'instagram', tokenData.name, caption, mediaType, mediaURL);
-        res.status(200).json({message: "Posted on Instagram successfully", mediaId: publishResponse.data.id});
+        res.status(200).json({message: "Posted on Instagram successfully"});
     }
     catch(error){
         console.error("Instagram posting error:", error.response?.data || error);

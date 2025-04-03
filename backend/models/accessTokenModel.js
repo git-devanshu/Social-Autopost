@@ -9,7 +9,7 @@ const tokenSchema = new mongoose.Schema({
     validityDuration : {type : Number, required : true}, //in seconds
     expiresAt : {type : Date, required : true}, //calculated at the time of storing token
     tokenSecret : {type : String}, //access token secret (required for twitter)
-    name : {type : String, default : ''}
+    name : {type : String, default : ''},
 });
 
 const AccessToken = mongoose.model('accesstokens', tokenSchema, 'accesstokens');
@@ -27,7 +27,7 @@ profileId
 name
 - linkedIn : profile name
 - twitter : profile username
-- facebook : profile name
+- facebook : name of facebook page
 - instagram : profile username
 
 */

@@ -93,12 +93,30 @@ export default function Connect() {
     }, [refresh]);
 
     // for getting the fbAppId
-    useEffect(()=>{}, []);
+    useEffect(()=>{
+        const token = localStorage.getItem('token');
+        axios.get(getBaseURL() + '/oauth/facebook/app', {headers : {
+            'Authorization' : `Bearer ${token}`
+        }})
+        .then(res =>{
+            if(res.status === 200){
+                setFbAppId(res.data.fbAppId);
+                if(res.data.fbAppId !== ""){
+                    setAreDetailsSaved(true);
+                    setFbAppSecret("*******************************");
+                }
+            }
+        })
+        .catch(err =>{
+            console.error(err);
+        });
+    }, []);
 
     const handleSidebarClick = (option) => {
         setActiveOption(option);
     };
 
+    // connect linkedIn profile through OAuth
     const goToLinkedInOAuth = () =>{
         toast('Redirecting to LinkedIn Authentication');
         const token = localStorage.getItem('token');
@@ -108,16 +126,15 @@ export default function Connect() {
         window.location.href = linkedInOAuthURL;
     }
 
+    // connect twitter profile through OAuth
     const goToTwitterOAuth = async() =>{
         toast("Redirecting to Twitter Authentication...");
         const token = localStorage.getItem("token");
         try{
-            const response = await axios.post(getBaseURL() + "/oauth/twitter/request-token", {}, {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                }
-            );
+            const response = await axios.post(getBaseURL() + "/oauth/twitter/request-token", {}, {headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
             if(response.data.oauth_token){
                 const twitterOAuthURL = `https://api.twitter.com/oauth/authenticate?oauth_token=${response.data.oauth_token}`;
                 window.location.href = twitterOAuthURL;
@@ -132,12 +149,41 @@ export default function Connect() {
         }
     };
     
+    // connect instagram profile through connected facebook page
+    const connectInstagram = () =>{
+        if(!profileConnection.facebook){
+            toast.error("Please connect to your Facebook Page first");
+            return;
+        }
+        const toastId = toast.loading('Connecting to your Linked Instagram Business Account');
+        const token = localStorage.getItem('token');
+        axios.get(getBaseURL() + '/oauth/instagram/connect', {headers : {
+            Authorization: `Bearer ${token}`,
+        }})
+        .then(res =>{
+            if(res.status === 200){
+                toast.success(res.data.message, {id: toastId});
+                setRefresh(!refresh);
+            }
+        })
+        .catch(err =>{
+            console.error(err);
+            toast.error(err.response.data.message, {id: toastId});
+        });
+    }
 
-    const connectInstagram = () =>{}
-
-
-    const goToFacebookOAuth = () =>{}
-
+    // connect facebook page through OAuth
+    const goToFacebookOAuth = () =>{
+        if(!areDetailsSaved || fbAppId === ""){
+            toast.error("You need to save your Facebook App credentials first");
+            return;
+        }
+        toast('Redirecting to Facebook Authentication...');
+        const tokenData = decodeToken(localStorage.getItem('token'));
+        const REDIRECT_URI = getBaseURL() + `/oauth/facebook/callback?userId=${tokenData.id}`;
+        const fbOAuthURL = `https://www.facebook.com/v19.0/dialog/oauth?client_id=${fbAppId}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&scope=instagram_basic,instagram_content_publish,pages_show_list`;
+        window.location.href = fbOAuthURL;
+    }
 
     const removeConnection = (platform) =>{
         const toastId = toast.loading('Removing Account Connection...');
@@ -153,6 +199,44 @@ export default function Connect() {
         })
         .catch(err =>{
             console.log(err);
+            toast.error(err.response.data.message, {id : toastId});
+        });
+    }
+
+    const saveFBAppCredentials = () =>{
+        const token = localStorage.getItem('token');
+        const toastId = toast.loading('Adding Facebook App credentials');
+        axios.post(getBaseURL() + '/oauth/facebook/app/add', {fbAppId, fbAppSecret}, {headers : {
+            'Authorization' : `Bearer ${token}`
+        }})
+        .then(res =>{
+            if(res.status === 200){
+                toast.success(res.data.message, {id : toastId});
+                setAreDetailsSaved(true);
+            }
+        })
+        .catch(err =>{
+            console.error(err);
+            toast.error(err.response.data.message, {id : toastId});
+        });
+    }
+
+    const removeFBAppCredentials = () =>{
+        const token = localStorage.getItem('token');
+        const toastId = toast.loading('Removing Facebook App credentials');
+        axios.delete(getBaseURL() + '/oauth/facebook/app/remove', {headers : {
+            'Authorization' : `Bearer ${token}`
+        }})
+        .then(res =>{
+            if(res.status === 200){
+                toast.success(res.data.message, {id : toastId});
+                setAreDetailsSaved(false);
+                setFbAppId('');
+                setFbAppSecret('');
+            }
+        })
+        .catch(err =>{
+            console.error(err);
             toast.error(err.response.data.message, {id : toastId});
         });
     }
@@ -261,10 +345,10 @@ export default function Connect() {
                             <Spacer/>
 
                             {areDetailsSaved ?
-                                <Button colorScheme="red" width={'140px'}>
+                                <Button colorScheme="red" width={'140px'} onClick={removeFBAppCredentials}>
                                     Remove
                                 </Button> :
-                                <Button colorScheme="green" width={'140px'}>
+                                <Button colorScheme="green" width={'140px'} onClick={saveFBAppCredentials}>
                                     Save
                                 </Button>                                
                             }
