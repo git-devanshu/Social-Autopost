@@ -308,7 +308,7 @@ export default function Connect() {
                     {/* Facebook app credentials */}
                     <Text fontSize="xl" fontWeight="bold" mt={2}>Your Facebook App Credentials</Text>
                     <VStack p={4} borderRadius="md" borderWidth={1} borderColor="gray.200" bg="gray.50" >
-                        <Text alignSelf="start">This is required to connect your Facebook Page and Instagram account linked to it.</Text>
+                        <Text alignSelf="start">This is required to connect your Facebook Page and Instagram account linked to it. Once your Facebook Page is connected, removing these credentails won't disconnect your Facebook from this site.</Text>
                         <HStack w="full">
                             <InputGroup>
                                 <InputLeftElement pointerEvents="none">
