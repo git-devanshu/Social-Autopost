@@ -94,7 +94,7 @@ const postToInstagram = async (req, res) => {
 };
 
 
-// @desc   - Upload the post to LinkedIn (Can upload only image or text)
+// @desc   - Upload the post to LinkedIn Account
 // @route  - POST /upload/linkedin
 // @access - Private
 const postToLinkedIn = async (req, res) => {
@@ -112,7 +112,7 @@ const postToLinkedIn = async (req, res) => {
             mediaType = "NONE";
         } 
         else{
-            mediaType = mediaType === "image" ? "IMAGE" : "VIDEO";
+            mediaType = mediaType.toUpperCase();
             assetURN = await registerMediaOnLinkedIn(mediaType, mediaURL, tokenData);
         }
 
@@ -134,7 +134,7 @@ const postToLinkedIn = async (req, res) => {
                         title: {
                             text: "Post Title",
                         },
-                    }] : [],
+                    }] : []
                 }
             },
             visibility: {
@@ -142,17 +142,16 @@ const postToLinkedIn = async (req, res) => {
             }
         };
 
-        const response = await axios.post("https://api.linkedin.com/v2/ugcPosts", postPayload, {
-                headers: {
-                    Authorization : `Bearer ${tokenData.token}`,
-                    "X-Restli-Protocol-Version" : "2.0.0",
-                    "Content-Type" : "application/json",
-                }
+        await axios.post("https://api.linkedin.com/v2/ugcPosts", postPayload, {
+            headers: {
+                Authorization : `Bearer ${tokenData.token}`,
+                "X-Restli-Protocol-Version" : "2.0.0",
+                "Content-Type" : "application/json",
             }
-        );
+        });
 
         await addRecordToHistory(userId, 'linkedin', tokenData.name, caption, mediaType, mediaURL);
-        res.status(200).json({ message: "Posted to LinkedIn successfully", response: response.data });
+        res.status(200).json({ message: "Posted to LinkedIn successfully" });
     } 
     catch(error){
         console.error("Error posting to LinkedIn:", error.response?.data || error);

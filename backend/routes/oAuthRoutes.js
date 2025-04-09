@@ -1,6 +1,7 @@
 const express = require('express');
 const oAuthRouter = express.Router();
-const {handleLinkedInCallback, getProfileConnectionData, handleFacebookCallback, handleTwitterCallback, removeAccessToken, getTwitterOAuthToken, requestTwitterOAuthToken, saveAccessToken, addFBAppDetails, getFBAppID, removeFBAppDetails, connectInstagramFromFB} = require('../controllers/oAuthController');
+const {handleLinkedInCallback, handleFacebookCallback, handleTwitterCallback, getTwitterOAuthToken, requestTwitterOAuthToken, connectInstagramFromFB} = require('../controllers/oAuthController');
+const {getProfileConnectionData, removeAccessToken, addFBAppDetails, getFBAppID, removeFBAppDetails, saveAccessToken} = require('../controllers/profileController');
 const {checkAuthorization} = require('../middlewares/checkAuth');
 
 // endpoint prefix : /oauth

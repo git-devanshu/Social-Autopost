@@ -26,10 +26,11 @@ const downloadMedia = async(mediaURL) => {
     });
 };
 
-// function to register the media on linkedIn registry and get the assetURN
+// function to register the media on linkedIn registry for user and get the assetURN
 const registerMediaOnLinkedIn = async(mediaType, mediaURL, tokenData) =>{
     try{
         const recipe = mediaType === "IMAGE" ? "urn:li:digitalmediaRecipe:feedshare-image" : "urn:li:digitalmediaRecipe:feedshare-video";
+        
         const registerUpload = await axios.post("https://api.linkedin.com/v2/assets?action=registerUpload", {
                 registerUploadRequest: {
                     recipes: [recipe],
@@ -54,11 +55,10 @@ const registerMediaOnLinkedIn = async(mediaType, mediaURL, tokenData) =>{
         const assetURN = registerUpload.data.value.asset;
 
         const mediaBuffer = await downloadMedia(mediaURL);
-        const mediaResponse = await axios.put(uploadURL, mediaBuffer, {
+        await axios.put(uploadURL, mediaBuffer, {
             headers: {
                 Authorization: `Bearer ${tokenData.token}`,
-                "Content-Type":
-                    mediaType === "IMAGE" ? "image/png" : "video/mp4",
+                "Content-Type": mediaType === "IMAGE" ? "image/png" : "video/mp4",
             },
         });
         

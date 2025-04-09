@@ -3,7 +3,7 @@ const { getCurrentDate } = require('../utils/helperFunctions');
 
 const historySchema = new mongoose.Schema({
     userId : {type : mongoose.Schema.Types.ObjectId, required : true},
-    platform : {type : String, required : true, enum : ['linkedin', 'instagram', 'facebook', 'twitter']},
+    platform : {type : String, required : true, enum : ['linkedin', 'linkedin-page', 'instagram', 'facebook', 'twitter']},
     accountName : {type : String, default : ''}, //account name or username from which the post was uploaded
     caption : {type : String, required : true},
     mediaType : {type : String, required : true},

@@ -9,6 +9,7 @@ const tokenSchema = new mongoose.Schema({
     validityDuration : {type : Number, required : true}, //in seconds
     expiresAt : {type : Date, required : true}, //calculated at the time of storing token
     tokenSecret : {type : String}, //access token secret (required for twitter)
+    ldnPageInfo : {type : Object}, //connected page info (required for linkedin)
     name : {type : String, default : ''},
 });
 

@@ -37,13 +37,13 @@ export default function Connect() {
             }, {});
     };
 
-    //this is for showing alerts when redirected by oauth
+    //this is for showing alerts when redirected back by oauth
     useEffect(() => {
         const queryParams = getQueryParams(location.search);
         if(queryParams.success === 'true'){
             toast.success('Profile Connected Successfully');
             navigate('/connect-profiles');
-        } 
+        }
         else if(queryParams.error === 'oauth_failed'){
             toast.error('Profile Authentication Failed')
             navigate('/connect-profiles');
