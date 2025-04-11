@@ -32,7 +32,7 @@ export default function SocialMediaPreview({ caption, isVerified, mediaURL, medi
     const uploadPost = (platform, uploadText) =>{
         setIsDisabled(true);
         const token = localStorage.getItem('token');
-        const toastId = toast.loading('Uploading, Please wait...');
+        const toastId = toast.loading('Uploading may take some time, do not refresh the page.');
         axios.post(getBaseURL() + `/upload/${platform}`, {caption : uploadText, mediaURL, mediaType}, {headers : {
             authorization : `Bearer ${token}`
         }})

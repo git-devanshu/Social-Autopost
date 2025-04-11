@@ -16,8 +16,8 @@ export default function ImageUpload({ onUpload, h, w }) {
         setUploading(true);
         const formData = new FormData();
         formData.append("file", file);
-        formData.append("upload_preset", "portfolio_cms");
-        formData.append("cloud_name", "dxksp15ir");
+        formData.append("upload_preset", import.meta.env.VITE_CLOUDINARY_NAME);
+        formData.append("cloud_name", import.meta.env.VITE_CLOUDINARY_CLOUD_NAME);
 
         try {
             const response = await fetch("https://api.cloudinary.com/v1_1/dxksp15ir/image/upload", {

@@ -4,6 +4,8 @@ const {addRecordToHistory} = require('../controllers/historyController');
 
 const axios = require("axios");
 const {TwitterApi} = require('twitter-api-v2');
+const { transcodeVideo } = require('../utils/transcodeVideo');
+const { uploadVideoToCloudinary } = require('../utils/uploadToCloudinary');
 
 require('dotenv').config();
 
@@ -60,24 +62,61 @@ const postToInstagram = async (req, res) => {
     try{
         const {caption, mediaURL, mediaType} = req.body;
         const userId = req.id;
-        
-        if(mediaType === "video"){
-            return res.status(400).json({ message : "Video Posts are not supported for Instagram" });
-        }
-        if(!mediaURL || mediaURL === null){
-            return res.status(400).json({ message : "Image is required to post on Instagram" });
+
+        if(!mediaURL){
+            return res.status(400).json({ message: "Media is required to post on Instagram" });
         }
 
         const tokenData = await AccessToken.findOne({ userId, platform: "instagram" });
         if(!tokenData || !tokenData.profileId || Date.now() >= new Date(tokenData.expiresAt).getTime()){
-            return res.status(401).json({ message: "Your Instagram profile is not connected" });
+            return res.status(401).json({ message: "Instagram profile not connected" });
         }
 
-        let mediaResponse = await axios.post(`https://graph.facebook.com/v19.0/${tokenData.profileId}/media`, {
-            image_url: mediaURL,
-            caption: caption,
-            access_token: tokenData.token
-        });
+        let mediaResponse;
+        if(mediaType === "image"){
+            mediaResponse = await axios.post(`https://graph.facebook.com/v19.0/${tokenData.profileId}/media`, {
+                image_url: mediaURL,
+                caption: caption,
+                access_token: tokenData.token
+            });
+        }
+        else if(mediaType === "video"){
+            const response = await axios.get(mediaURL, { responseType: 'arraybuffer' });
+            const inputBuffer = Buffer.from(response.data);
+            const outputBuffer = await transcodeVideo(inputBuffer);
+            const newMediaURL = await uploadVideoToCloudinary(outputBuffer);
+
+            mediaResponse = await axios.post(`https://graph.facebook.com/v22.0/${tokenData.profileId}/media`, {
+                media_type: "REELS",
+                video_url: newMediaURL,
+                caption: caption,
+                share_to_feed: true,
+                thumb_offset: "00:00:01.000",
+                access_token: tokenData.token
+            });
+
+            const creationId = mediaResponse.data.id;
+
+            let status = "";
+            let attempts = 0;
+            const maxAttempts = 30;
+            do{
+                await new Promise(r => setTimeout(r, 10000));
+                const statusResponse = await axios.get(`https://graph.facebook.com/v19.0/${creationId}?fields=status_code,status`,
+                    { params: { access_token: tokenData.token } }
+                );
+                status = statusResponse.data.status_code;
+                console.log(`Attempt ${++attempts}: ${status}`);
+            }while(status === "IN_PROGRESS" && attempts < maxAttempts);
+
+            if(status !== "FINISHED"){
+                console.error("Final status:", status);
+                return res.status(500).json({ message: "Failed to process the video", error: "Timeout" });
+            }
+        }
+        else{
+            return res.status(400).json({ message: "Unsupported media type" });
+        }
 
         await axios.post(`https://graph.facebook.com/v19.0/${tokenData.profileId}/media_publish`, {
             creation_id: mediaResponse.data.id,
@@ -86,12 +125,12 @@ const postToInstagram = async (req, res) => {
 
         await addRecordToHistory(userId, 'instagram', tokenData.name, caption, mediaType, mediaURL);
         res.status(200).json({message: "Posted on Instagram successfully"});
-    }
-    catch(error){
+    } catch (error) {
         console.error("Instagram posting error:", error.response?.data || error);
-        res.status(500).json({message: "Internal Server Error"});
+        res.status(500).json({ message: "Failed to post on Instagram" });
     }
 };
+
 
 
 // @desc   - Upload the post to LinkedIn Account
