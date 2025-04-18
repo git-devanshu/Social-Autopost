@@ -11,6 +11,7 @@ import NotFound from './pages/NotFound';
 import AutoPost from './pages/Dashboard';
 import Connect from './pages/Connect';
 import History from './pages/History';
+import FAQPage from './pages/FAQPage';
 
 export default function App() {
     return (
@@ -28,7 +29,8 @@ export default function App() {
                     {/* <Route path='/schedule-posts' element={< />} /> */}
                     <Route path='/history' element={<History />} />
                     {/* <Route path='/profile' element={< />} /> */}
-                    {/* <Route path='/' element={< />} /> */}
+                    <Route path='/questions' element={<FAQPage />} />
+                    {/* <Route path='/help' element={< />} /> */}
         
                     {/* Fallback route : 404 Not found page */}
                     <Route path='*' element={<NotFound />} />
