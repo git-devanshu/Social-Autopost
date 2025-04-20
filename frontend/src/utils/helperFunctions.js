@@ -55,7 +55,7 @@ export function decodeToken(token) {
 }
 
 export function getBaseURL(){
-    return 'http://localhost:5000';
+    return 'https://social-autopost-backend.onrender.com';
 }
 
 // Format date as "DD-MM-YYYY"
