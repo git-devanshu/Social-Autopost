@@ -139,44 +139,10 @@ const removeAccessToken = async(req, res) =>{
 }
 
 
-/*-------------------------------------------------------------*/
-
-// API endpoint to save access token to DB, for testing purpose only
-
-const saveAccessToken = async(req, res) =>{
-    try{
-        const {platform, accessToken, profileId, name} = req.body;
-        userId = req.id;
-
-        const customValidityPeriod = 60 * 24 * 60 * 60;
-        await AccessToken.findOneAndUpdate({userId, platform}, {
-            userId,
-            token: accessToken,
-            profileId,
-            platform,
-            issuedAt: new Date(),
-            name,
-            validityDuration : customValidityPeriod,
-            expiresAt: new Date(Date.now() + customValidityPeriod * 1000)
-        }, {
-            upsert: true, new: true
-        });
-
-        res.status(200).json({ message: "Token stored" });
-    }
-    catch(error){
-        res.status(500).josn({ message : "Internal Servere Error" });
-    }
-}
-
-/*-------------------------------------------------------------*/
-
-
 module.exports = {
     getProfileConnectionData,
     removeAccessToken,
     addFBAppDetails,
     getFBAppID,
-    removeFBAppDetails,
-    saveAccessToken
+    removeFBAppDetails
 };

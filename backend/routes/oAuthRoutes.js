@@ -22,12 +22,5 @@ oAuthRouter.delete('/facebook/app/remove', checkAuthorization, removeFBAppDetail
 oAuthRouter.get('/facebook/callback', handleFacebookCallback);
 oAuthRouter.get('/instagram/connect', checkAuthorization, connectInstagramFromFB);
 
-/*-------------------------------------------------------------*/
-
-// For testing purpose only
-oAuthRouter.post('/store-token', checkAuthorization, saveAccessToken);
-
-/*-------------------------------------------------------------*/
-
 
 module.exports = {oAuthRouter};

@@ -12,6 +12,7 @@ import AutoPost from './pages/Dashboard';
 import Connect from './pages/Connect';
 import History from './pages/History';
 import FAQPage from './pages/FAQPage';
+import HelpPage from './pages/HelpPage';
 
 export default function App() {
     return (
@@ -30,7 +31,7 @@ export default function App() {
                     <Route path='/history' element={<History />} />
                     {/* <Route path='/profile' element={< />} /> */}
                     <Route path='/questions' element={<FAQPage />} />
-                    {/* <Route path='/help' element={< />} /> */}
+                    <Route path='/help' element={<HelpPage />} />
         
                     {/* Fallback route : 404 Not found page */}
                     <Route path='*' element={<NotFound />} />

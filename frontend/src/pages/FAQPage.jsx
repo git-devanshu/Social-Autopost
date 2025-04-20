@@ -1,6 +1,6 @@
 import React from "react";
 import {Accordion, AccordionItem, AccordionButton, AccordionPanel, AccordionIcon, Box, Heading, Container, Divider, Grid, Text, Button} from "@chakra-ui/react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const FAQPage = () => {
     const navigate = useNavigate();
@@ -24,7 +24,7 @@ const FAQPage = () => {
             </Box>
 
             <Container maxW="3xl" py={10}>
-                <Heading size='lg' mb={5}>Profile and Connections</Heading>
+                <Heading size='md' mb={5}>Profile and Connections</Heading>
                 <Accordion allowToggle>
                     <AccordionItem border="1px solid" borderColor="gray.200" borderRadius="lg" mb={4} bg="white">
                         <h2>
@@ -149,7 +149,7 @@ const FAQPage = () => {
                     </AccordionItem>
                 </Accordion>
 
-                <Heading size='lg' mb={5}>Posting</Heading>
+                <Heading size='md' mb={5}>Posting</Heading>
                 <Accordion allowToggle>
                     <AccordionItem border="1px solid" borderColor="gray.200" borderRadius="lg" mb={4} bg="white">
                         <h2>
@@ -192,7 +192,7 @@ const FAQPage = () => {
                         </h2>
                         <AccordionPanel px={6} pt={0} pb={4}>
                         <Divider mb={4} />
-                        You can upload jpg and png format images and mp4 and mkv format videos.
+                        You can upload jpg and png format images and mp4 and mov format videos.
                         </AccordionPanel>
                     </AccordionItem>
 
@@ -258,6 +258,7 @@ const FAQPage = () => {
                             <li>Keep your text/caption length within the limits.</li>
                             <li>Ensure the supported media formats, try jpg, png for images and mp4 for videos.</li>
                             <li>If an error occurs while making a video post, the video encoding may be unsupported even if the video is of mp4 format, so try changing the video.</li>
+                            <li>The error may be due to the exhaustion of your API rate limit in case you've made too many posts. So wait until the limit resets.</li>
                         </ol>
                         </AccordionPanel>
                     </AccordionItem>
@@ -273,7 +274,8 @@ const FAQPage = () => {
                         </h2>
                         <AccordionPanel px={6} pt={0} pb={4}>
                         <Divider mb={4} />
-                        {/* Add content here if needed */}
+                        We are using official APIs for every social media platform so there are different limits for each one of them. Check the detailed limits on the Help page.<br/>
+                        <Button colorScheme="gray" size='md' mt={5} width='100px' onClick={navigateToHelp}>Help</Button>
                         </AccordionPanel>
                     </AccordionItem>
 

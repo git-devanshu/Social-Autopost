@@ -12,6 +12,7 @@ const checkAuthorization = (req, res, next)=>{
             }
             req.id = decoded.id;
             req.email = decoded.email;
+            req.name = decoded.name;
             next();
         }
         catch(error){

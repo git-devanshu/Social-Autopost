@@ -11,7 +11,7 @@ export default function SocialMediaPreview({ caption, isVerified, mediaURL, medi
     const platforms = [
         { name: "Twitter", color: "blue.100", textColor: "blue.600", border: "2px solid #1AA2F8", maxChars: 280, icon: FaTwitter, colorScheme: "twitter", bgColor: "#1DA1F2" },
         { name: "Instagram", color: "red.100", textColor: "red.600", border: "2px solid #FF4D4C", maxChars: 2200, icon: FaInstagram, colorScheme: "pink", bgColor: "#E1306C" },
-        { name: "LinkedIn", color: "blue.300", textColor: "blue.800", border: "2px solid #0B66C3", maxChars: 3000, icon: FaLinkedin, colorScheme: "linkedin", bgColor: "#0077B5" },
+        { name: "LinkedIn", color: "blue.300", textColor: "blue.800", border: "2px solid #0B66C3", maxChars: 1300, icon: FaLinkedin, colorScheme: "linkedin", bgColor: "#0077B5" },
         { name: "Facebook", color: "gray.200", textColor: "gray.700", border: "2px solid gray", maxChars: 63206, icon: FaFacebook, colorScheme: "facebook", bgColor: "#1877F2" },
     ];
 
@@ -112,6 +112,7 @@ export default function SocialMediaPreview({ caption, isVerified, mediaURL, medi
 
                             <Text fontSize="sm" color={isExceedingLimit ? "red.500" : "gray.500"}>
                                 {editableTexts[platform.name].length}/{platform.maxChars} characters
+                                {platform.name == "Facebook" && " (for image or videos, this text should not exceed 2200 characters else it will be trimmed)"}
                             </Text>
 
                             {isExceedingLimit && (

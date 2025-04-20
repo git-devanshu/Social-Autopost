@@ -59,7 +59,7 @@ export default function ImageUpload({ onUpload, h, w }) {
                 <span style={{ color: "gray" }}>
                     {uploading ? "Uploading..." : "Click to Upload Image"}
                     <span style={{ color: "gray", fontSize: "0.8rem", display: "block", marginTop: "0.5rem" }}>
-                        (JPG, JPEG, PNG - max 15MB)
+                        (JPG, JPEG, PNG)
                     </span>
                 </span>
             )}

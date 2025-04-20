@@ -1,4 +1,5 @@
 import { useState } from "react";
+import {toast} from 'react-hot-toast';
 
 export default function VideoUpload({onUpload, h, w}) {
     const [videoPreview, setVideoPreview] = useState(null);
@@ -24,6 +25,8 @@ export default function VideoUpload({onUpload, h, w}) {
         formData.append("cloud_name", import.meta.env.VITE_CLOUDINARY_CLOUD_NAME);
         formData.append("resource_type", "video");
 
+        const toastId = toast.loading('Uploading Video, please don not refresh the page');
+
         try{
             const response = await fetch(
                 "https://api.cloudinary.com/v1_1/dxksp15ir/video/upload",
@@ -33,11 +36,13 @@ export default function VideoUpload({onUpload, h, w}) {
                 }
             );
             const data = await response.json();
+            toast.success('Video uploaded', {id : toastId});
             onUpload(data.secure_url);
             setUploading(false);
         } 
         catch(error){
             console.error("Video upload failed:", error);
+            toast.error('Video upload failed', {id : toastId});
             setUploading(false);
         }
     };
@@ -79,7 +84,7 @@ export default function VideoUpload({onUpload, h, w}) {
                         <>
                             <span style={{ color: "gray", display: "block" }}>Click to upload Video</span>
                             <span style={{ color: "gray", fontSize: "0.8rem", display: "block", marginTop: "0.5rem" }}>
-                                (MP4, MOV - max 15MB)
+                                (MP4, MOV)
                             </span>
                         </>
                     )}

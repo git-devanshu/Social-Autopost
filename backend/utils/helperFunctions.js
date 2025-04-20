@@ -56,6 +56,37 @@ Team Social Autopost`
     }
 }
 
+// @desc   - sends the issue report email to the admin email id
+// @path   - POST /report-issue
+// @access - Private
+const reportIssueViaMail = async(req, res)=>{
+    try{
+        const {title, description} = req.body;
+        const emailId = req.email;
+        const name = req.name;
+
+        const info = transporter.sendMail({
+            from : process.env.USER,
+            to : process.env.USER,
+            subject : 'Issue Reported by AutoPost user',
+            text : `
+Issue Report sent by ${name}
+user's email : ${emailId}
+
+${title}
+${description}
+            `
+        });
+
+        res.status(200).json({ message : "Issue reported successfully" });
+        console.log("Issue report email sent");
+    }
+    catch(error){
+        console.log("Error sending issue report email", error);
+        res.status(500).json({ message : "Internal Server Error" });
+    }
+}
+
 const generateVerificationCode = (size) =>{
     let code = '';
     const characters = '0123456789';
@@ -135,5 +166,6 @@ module.exports = {
     generateVerificationCode,
     getCurrentDate,
     encryptData,
-    decryptData
+    decryptData,
+    reportIssueViaMail
 }

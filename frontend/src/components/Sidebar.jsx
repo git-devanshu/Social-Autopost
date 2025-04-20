@@ -1,5 +1,5 @@
 import { VStack, Text, Button, Spacer, HStack } from "@chakra-ui/react";
-import { FaSignOutAlt, FaEdit, FaCalendarAlt, FaUserFriends, FaHistory } from "react-icons/fa";
+import { FaSignOutAlt, FaEdit, FaCalendarAlt, FaUserFriends, FaHistory, FaInfoCircle, FaQuestionCircle } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 
 export default function Sidebar({ activeOption, handleSidebarClick }) {
@@ -8,6 +8,14 @@ export default function Sidebar({ activeOption, handleSidebarClick }) {
   const logout = () =>{
     localStorage.removeItem('token');
     navigate('/');
+  }
+
+  const navigateToHelp = () =>{
+    navigate('/help');
+  }
+
+  const navigateToFAQs = () =>{
+    navigate('/questions');
   }
 
   return (
@@ -43,6 +51,7 @@ export default function Sidebar({ activeOption, handleSidebarClick }) {
         color={activeOption === "Schedule" ? "#5EBD81" : "white"}
         _hover={{ bg: "white", color: "#5EBD81" }}
         onClick={() => {handleSidebarClick("Schedule"); navigate('/schedule-posts');}}
+        disabled={true}
       >Schedule</Button>
 
       <Button leftIcon={<FaHistory />} 
@@ -52,6 +61,22 @@ export default function Sidebar({ activeOption, handleSidebarClick }) {
         _hover={{ bg: "white", color: "#5EBD81" }}
         onClick={() => {handleSidebarClick("History"); navigate('/history');}}
       >History</Button>
+
+      <Button leftIcon={<FaInfoCircle />} 
+        variant="solid" justifyContent="flex-start"
+        bg={"transparent"} 
+        color={"white"}
+        _hover={{ bg: "white", color: "#5EBD81" }}
+        onClick={navigateToHelp}
+      >Help & Support</Button>
+
+      <Button leftIcon={<FaQuestionCircle />} 
+        variant="solid" justifyContent="flex-start"
+        bg={"transparent"} 
+        color={"white"}
+        _hover={{ bg: "white", color: "#5EBD81" }}
+        onClick={navigateToFAQs}
+      >FAQs</Button>
 
       <Spacer />
       <Button onClick={logout} leftIcon={<FaSignOutAlt />} variant="ghost" justifyContent="flex-start" color="white" _hover={{ bg: "white", color: "#5EBD81" }}>Log Out</Button>

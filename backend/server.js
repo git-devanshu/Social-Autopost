@@ -5,6 +5,8 @@ const {authRouter} = require('./routes/authRoutes');
 const {postRouter} = require('./routes/postRoutes');
 const {oAuthRouter} = require('./routes/oAuthRoutes');
 const {historyRouter} = require('./routes/historyRoutes');
+const {checkAuthorization} = require('./middlewares/checkAuth');
+const {reportIssueViaMail} = require('./utils/helperFunctions');
 
 require('dotenv').config();
 
@@ -23,6 +25,7 @@ app.use('/auth', authRouter);
 app.use('/upload', postRouter);
 app.use('/oauth', oAuthRouter);
 app.use('/history', historyRouter);
+app.post('/report-issue', checkAuthorization, reportIssueViaMail);
 
 // run the server
 app.listen(process.env.PORT, () =>{
