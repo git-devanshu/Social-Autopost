@@ -204,6 +204,10 @@ export default function Connect() {
     }
 
     const saveFBAppCredentials = () =>{
+        if(fbAppId === "" || fbAppSecret === ""){
+            toast.error("Add the credentials first");
+            return;
+        }
         const token = localStorage.getItem('token');
         const toastId = toast.loading('Adding Facebook App credentials');
         axios.post(getBaseURL() + '/oauth/facebook/app/add', {fbAppId, fbAppSecret}, {headers : {
