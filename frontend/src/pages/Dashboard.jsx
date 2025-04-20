@@ -1,6 +1,6 @@
 import {HStack} from "@chakra-ui/react";
 import { useState } from "react";
-import Sidebar from "../components/sidebar";
+import Sidebar from "../components/Sidebar";
 import MainContent from "../components/MainContent";
 
 export default function AutoPost() {
