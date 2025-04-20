@@ -13,6 +13,7 @@ import Connect from './pages/Connect';
 import History from './pages/History';
 import FAQPage from './pages/FAQPage';
 import HelpPage from './pages/HelpPage';
+import AboutUs from './pages/AboutUs';
 
 export default function App() {
     return (
@@ -32,6 +33,7 @@ export default function App() {
                     {/* <Route path='/profile' element={< />} /> */}
                     <Route path='/questions' element={<FAQPage />} />
                     <Route path='/help' element={<HelpPage />} />
+                    <Route path='/about-us' element={<AboutUs />} />
         
                     {/* Fallback route : 404 Not found page */}
                     <Route path='*' element={<NotFound />} />

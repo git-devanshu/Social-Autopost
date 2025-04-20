@@ -1,5 +1,5 @@
 import { VStack, Text, Button, Spacer, HStack } from "@chakra-ui/react";
-import { FaSignOutAlt, FaEdit, FaCalendarAlt, FaUserFriends, FaHistory, FaInfoCircle, FaQuestionCircle } from "react-icons/fa";
+import { FaSignOutAlt, FaEdit, FaCalendarAlt, FaUserFriends, FaHistory, FaInfoCircle, FaQuestionCircle, FaAddressCard } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 
 export default function Sidebar({ activeOption, handleSidebarClick }) {
@@ -16,6 +16,10 @@ export default function Sidebar({ activeOption, handleSidebarClick }) {
 
   const navigateToFAQs = () =>{
     navigate('/questions');
+  }
+
+  const navigateToAbout = () =>{
+    navigate('/about-us');
   }
 
   return (
@@ -70,6 +74,14 @@ export default function Sidebar({ activeOption, handleSidebarClick }) {
         onClick={navigateToHelp}
       >Help & Support</Button>
 
+      <Button leftIcon={<FaAddressCard />} 
+        variant="solid" justifyContent="flex-start"
+        bg={"transparent"} 
+        color={"white"}
+        _hover={{ bg: "white", color: "#5EBD81" }}
+        onClick={navigateToAbout}
+      >About Us</Button>
+
       <Button leftIcon={<FaQuestionCircle />} 
         variant="solid" justifyContent="flex-start"
         bg={"transparent"} 
@@ -77,6 +89,8 @@ export default function Sidebar({ activeOption, handleSidebarClick }) {
         _hover={{ bg: "white", color: "#5EBD81" }}
         onClick={navigateToFAQs}
       >FAQs</Button>
+
+      
 
       <Spacer />
       <Button onClick={logout} leftIcon={<FaSignOutAlt />} variant="ghost" justifyContent="flex-start" color="white" _hover={{ bg: "white", color: "#5EBD81" }}>Log Out</Button>
