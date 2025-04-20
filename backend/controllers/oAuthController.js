@@ -15,7 +15,7 @@ require('dotenv').config();
 const handleLinkedInCallback = async(req, res) =>{
     try{
         const {code, state: userId} = req.query;
-        const REDIRECT_URI = `${req.protocol}://${req.get('host')}/oauth/linkedin/callback`;
+        const REDIRECT_URI = `${process.env.SERVER_URL}/oauth/linkedin/callback`;
 
         const tokenResponse = await axios.post("https://www.linkedin.com/oauth/v2/accessToken", querystring.stringify({
             grant_type: "authorization_code",
@@ -77,7 +77,7 @@ const requestTwitterOAuthToken = async (req, res) => {
             }
         });
 
-        const REDIRECT_URI = `${req.protocol}://${req.get('host')}/oauth/twitter/callback`;
+        const REDIRECT_URI = `${process.env.SERVER_URL}/oauth/twitter/callback`;
         const requestData = {
             url: "https://api.twitter.com/oauth/request_token",
             method: "POST",
@@ -219,7 +219,7 @@ const handleFacebookCallback = async(req, res) => {
         const fbAppId = decryptData(savedUser.fbAppId);
         const fbAppSecret = decryptData(savedUser.fbAppSecret);
 
-        const REDIRECT_URI = `${req.protocol}://${req.get('host')}/oauth/facebook/callback?userId=${userId}`;
+        const REDIRECT_URI = `${process.env.SERVER_URL}/oauth/facebook/callback?userId=${userId}`;
         const tokenResponse = await axios.get(`https://graph.facebook.com/v19.0/oauth/access_token`, {
             params: {
                 client_id: fbAppId,

@@ -40,7 +40,7 @@ AutoPost is a powerful full-stack web application that allows users to seamlessl
 
 ## Deployed Project Link
 
-🔗 **Live Demo:** [View the deployed project here]()
+🔗 **Live Demo:** [View the deployed project here](https://autopost-tgk1.onrender.com)
 
 ---
 
