@@ -28,12 +28,12 @@ export default function App() {
                     {/* Main Pages */}
                     <Route path='/dashboard' element={<ProtectedDashboard />} />
                     <Route path='/connect-profiles' element={<ProtectedConnectProfiles />} />
-                    {/* <Route path='/schedule-posts' element={< />} /> */}
-                    <Route path='/history' element={<History />} />
-                    {/* <Route path='/profile' element={< />} /> */}
+                    <Route path='/history' element={<ProtectedHistory />} />
                     <Route path='/questions' element={<FAQPage />} />
                     <Route path='/help' element={<HelpPage />} />
                     <Route path='/about-us' element={<AboutUs />} />
+                    {/* <Route path='/schedule-posts' element={< />} /> */}
+                    {/* <Route path='/profile' element={< />} /> */}
         
                     {/* Fallback route : 404 Not found page */}
                     <Route path='*' element={<NotFound />} />
@@ -76,6 +76,16 @@ const ProtectedConnectProfiles = () =>{
     const decodedToken = decodeToken(localStorage.getItem('token'));
     if(decodedToken && decodedToken.id){
         return <Connect />
+    }
+    else{
+        return <Navigate to='/' />
+    }
+}
+
+const ProtectedHistory = () =>{
+    const decodedToken = decodeToken(localStorage.getItem('token'));
+    if(decodedToken && decodedToken.id){
+        return <History />
     }
     else{
         return <Navigate to='/' />

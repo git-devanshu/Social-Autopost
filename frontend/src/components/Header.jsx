@@ -1,6 +1,5 @@
-import { Flex, Box, HStack, Text, IconButton, Badge, Tooltip, Avatar, Menu, MenuButton, MenuList, MenuItem } from "@chakra-ui/react";
-import { FaInfoCircle, FaCog, FaBell, FaUserEdit, FaSignOutAlt } from "react-icons/fa";
-import { Link } from "react-router-dom";
+import { Flex, HStack, Text, IconButton, Tooltip, Avatar, Menu, MenuButton, MenuList, MenuItem } from "@chakra-ui/react";
+import { FaInfoCircle, FaCog, FaSignOutAlt, FaUser } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 
 export default function Header({username, profileImage, profileModal, settingsModal, infoModal }){
@@ -48,11 +47,9 @@ export default function Header({username, profileImage, profileModal, settingsMo
             />
           </MenuButton>
           <MenuList>
-            <Link to="/profile">
-            <MenuItem icon={<FaUserEdit />} onClick={profileModal.onOpen}>
-              Edit Profile
+            <MenuItem icon={<FaUser />}>
+              {username}
             </MenuItem>
-            </Link>
             <MenuItem icon={<FaSignOutAlt />} color="red.500" onClick={logout}>
               Logout
             </MenuItem>

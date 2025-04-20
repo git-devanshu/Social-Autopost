@@ -1,4 +1,5 @@
 import { Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalFooter, VStack, Text, Button } from "@chakra-ui/react";
+import { getCurrentDate } from "../utils/helperFunctions";
 
 export default function InfoModal({ isOpen, onClose }) {
   return (
@@ -9,8 +10,8 @@ export default function InfoModal({ isOpen, onClose }) {
         <ModalBody>
           <VStack spacing={4} align="stretch">
             <Text>Version 1.0.0</Text>
-            <Text>Create and schedule posts for multiple social media platforms.</Text>
-            <Text>© 2023 AutoPost Inc. All rights reserved.</Text>
+            <Text>Create posts for multiple social media platforms.</Text>
+            <Text>&copy; {getCurrentDate(4)} AutoPost Inc.</Text>
           </VStack>
         </ModalBody>
         <ModalFooter>

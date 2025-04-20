@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from 'axios';
-import { Box, Button, Flex, Heading, Input, Link, Stack, Text, Image, HStack, PinInput, PinInputField, ScaleFade, Fade } from "@chakra-ui/react";
+import { Box, Button, Flex, Heading, Input, Link, Stack, Text, Image, HStack, PinInput, PinInputField, ScaleFade } from "@chakra-ui/react";
 import { useNavigate, useLocation } from "react-router-dom";
 import {toast} from 'react-hot-toast';
 import {getBaseURL} from '../utils/helperFunctions';

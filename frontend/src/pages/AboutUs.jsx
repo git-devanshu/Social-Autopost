@@ -85,7 +85,7 @@ export default function AboutUs() {
             {/* Developer Info */}
             <Box pt={2} w="100%">
               <HStack w="100%" align="center" mb={4}>
-              <Divider />
+              <Divider/>
               <Text fontWeight="semibold" color="gray.500" px={4}>
                 Meet the Makers
               </Text>
