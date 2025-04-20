@@ -172,18 +172,18 @@ export default function Connect() {
         });
     }
 
-    // connect facebook page through OAuth
-    const goToFacebookOAuth = () =>{
+    const goToFacebookOAuth = () => {
         if(!areDetailsSaved || fbAppId === ""){
             toast.error("You need to save your Facebook App credentials first");
             return;
         }
         toast('Redirecting to Facebook Authentication...');
         const tokenData = decodeToken(localStorage.getItem('token'));
-        const REDIRECT_URI = getBaseURL() + `/oauth/facebook/callback?userId=${tokenData.id}`;
-        const fbOAuthURL = `https://www.facebook.com/v19.0/dialog/oauth?client_id=${fbAppId}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&scope=instagram_basic,instagram_content_publish,pages_show_list`;
+        const REDIRECT_URI = getBaseURL() + `/oauth/facebook/callback`;
+        const state = tokenData.id;
+        const fbOAuthURL = `https://www.facebook.com/v19.0/dialog/oauth?client_id=${fbAppId}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&state=${encodeURIComponent(state)}&scope=instagram_basic,instagram_content_publish,pages_show_list`;
         window.location.href = fbOAuthURL;
-    }
+    };
 
     const removeConnection = (platform) =>{
         const toastId = toast.loading('Removing Account Connection...');

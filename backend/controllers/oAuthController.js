@@ -210,7 +210,7 @@ const getTwitterOAuthToken = async (req, res) => {
 // @access - Callback & Public
 const handleFacebookCallback = async(req, res) => {
     try{
-        const {code, userId} = req.query;
+        const {code, state : userId} = req.query;
         if(!code || !userId){
             return res.status(400).json({ message: "Authorization code missing" });
         }
@@ -219,7 +219,7 @@ const handleFacebookCallback = async(req, res) => {
         const fbAppId = decryptData(savedUser.fbAppId);
         const fbAppSecret = decryptData(savedUser.fbAppSecret);
 
-        const REDIRECT_URI = `${process.env.SERVER_URL}/oauth/facebook/callback?userId=${userId}`;
+        const REDIRECT_URI = `${process.env.SERVER_URL}/oauth/facebook/callback`;
         const tokenResponse = await axios.get(`https://graph.facebook.com/v19.0/oauth/access_token`, {
             params: {
                 client_id: fbAppId,
