@@ -5,7 +5,7 @@ import React, { useEffect, useState } from 'react'
 import {toast} from 'react-hot-toast';
 import {getBaseURL, decodeToken} from '../utils/helperFunctions';
 import axios from 'axios';
-import Sidebar from "../components/sidebar";
+import Sidebar from "../components/Sidebar";
 import {useNavigate, useLocation} from 'react-router-dom';
 
 export default function Connect() {

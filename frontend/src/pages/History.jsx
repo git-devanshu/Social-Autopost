@@ -1,7 +1,7 @@
 import { Box, VStack, HStack, Text, Icon, Select, Input, Button, Image } from "@chakra-ui/react";
 import { FaInstagram, FaFacebook, FaTwitter, FaLinkedin, FaTrash } from "react-icons/fa";
 import React, { useEffect, useState } from 'react';
-import Sidebar from "../components/sidebar";
+import Sidebar from "../components/Sidebar";
 import { useNavigate } from 'react-router-dom';
 import {getBaseURL, formatDate} from '../utils/helperFunctions';
 import {toast} from 'react-hot-toast';
